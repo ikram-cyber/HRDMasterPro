@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRD Master Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <style>
+        :root { --primary: #2563eb; --dark: #1e3a8a; --success: #16a34a; --danger: #dc2626; --warn: #eab308; --bg: #eff6ff; --text: #1e293b; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 80px; }
+        
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #dbeafe; }
+        .dash-box { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .dash-item { text-align: center; background: rgba(255,255,255,0.15); padding: 10px; border-radius: 8px; }
+        .dash-item h2 { margin: 5px 0 0 0; font-size: 24px; }
+        
+        h3 { margin-top: 0; color: var(--dark); border-bottom: 2px solid #dbeafe; padding-bottom: 8px; font-size: 16px; }
+        input, select, button, textarea { width: 100%; padding: 10px; margin: 6px 0; border-radius: 6px; border: 1px solid #bfdbfe; box-sizing: border-box; font-size: 14px; font-family:inherit; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        
+        .btn-row { display: flex; gap: 10px; }
+        .btn-main { background: var(--primary); color: white; border: none; font-weight: bold; }
+        .btn-print { background: #475569; color: white; border: none; font-weight: bold; flex:1; }
+        .btn-excel { background: #16a34a; color: white; border: none; font-weight: bold; flex:1; }
+        .btn-slip { background: #0891b2; color: white; border: none; font-size:11px; padding:5px; border-radius:4px; font-weight:bold; cursor:pointer; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th, td { padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: middle; }
+        th { background: #f1f5f9; font-weight: 600; color: var(--dark); }
+        .text-right { text-align: right; }
+        
+        .b-h { background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .b-s { background: #fef08a; color: #854d0e; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .b-i { background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .b-a { background: #fee2e2; color: #9f1239; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        
+        .page { display: none; animation: fadeIn 0.3s ease; } .page.active { display: block; }
+        @keyframes fadeIn { from {opacity:0; transform:translateY(5px);} to {opacity:1; transform:translateY(0);} }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 5px; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 100; border-top: 1px solid #e2e8f0; }
+        .nav-item { border: none; background: none; font-size: 11px; color: #94a3b8; display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 5px; width: 20%; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item i { font-size: 18px; margin-bottom: 2px; font-style: normal; }
+
+        /* PRINT STYLES */
+        .header-print { display: none; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+        .slip-box { display: none; border: 1px solid #000; padding: 20px; border-radius: 0; margin-bottom: 20px; font-family: monospace; font-size:14px; }
+        .ttd-area { display: none; margin-top: 40px; text-align: right; font-size: 14px; }
+        .ttd-area div { display: inline-block; text-align: center; width: 200px; }
+
+        @media print {
+            body { background: white; padding: 0; font-size: 11pt; }
+            .card { box-shadow: none; border: none; padding: 0; }
+            .no-print, .bottom-nav { display: none !important; }
+            .header-print, .ttd-area { display: block; }
+            .slip-box { display: block !important; page-break-inside: avoid; }
+            table, th, td { border-color: #000; color: #000; }
+            th { background: #f1f5f9 !important; -webkit-print-color-adjust: exact; }
+            .page { display: block; } /* Show all in print if needed, controlled by JS */
+        }
+    </style>
+</head>
+<body>
+
+<div id="p-home" class="page active">
+    <div class="dash-box no-print">
+        <div class="dash-item"><p style="margin:0; font-size:11px;">Total Karyawan</p><h2 id="v-karyawan">0</h2></div>
+        <div class="dash-item"><p style="margin:0; font-size:11px;">Hadir Hari Ini</p><h2 id="v-hadir">0</h2></div>
+        <div class="dash-item" style="background: rgba(234,179,8,0.3);"><p style="margin:0; font-size:11px;">Sakit / Izin</p><h2 id="v-izin">0</h2></div>
+        <div class="dash-item" style="background: rgba(220,38,38,0.3);"><p style="margin:0; font-size:11px;">Alpa (Tanpa Ket)</p><h2 id="v-alpa">0</h2></div>
+    </div>
+    
+    <div class="card no-print">
+        <h3>📊 Rekap Absensi Hari Ini</h3>
+        <div style="overflow-x:auto;"><div id="view-absen-dash"></div></div>
+    </div>
+</div>
+
+<div id="p-pegawai" class="page">
+    <div class="card no-print">
+        <h3>+ Tambah Karyawan Baru</h3>
+        <input type="text" id="k-nik" placeholder="NIK / ID Karyawan">
+        <input type="text" id="k-nama" placeholder="Nama Lengkap">
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="k-dept" placeholder="Departemen (Cth: IT, HRD)" style="flex:1;">
+            <input type="text" id="k-jabatan" placeholder="Jabatan (Cth: Staff)" style="flex:1;">
+        </div>
+        <select id="k-status">
+            <option value="Tetap">Karyawan Tetap</option>
+            <option value="Kontrak">Karyawan Kontrak</option>
+            <option value="Magang">Magang / Freelance</option>
+        </select>
+        <label style="font-size:12px; font-weight:bold; margin-top:5px; display:block;">Gaji Pokok (Rp):</label>
+        <input type="number" id="k-gapok" placeholder="Contoh: 4000000">
+        <button class="btn-main" onclick="catatKaryawan()">Simpan Data Karyawan</button>
+    </div>
+
+    <div class="card">
+        <h3>Daftar Karyawan</h3>
+        <div style="overflow-x:auto;"><div id="view-pegawai"></div></div>
+    </div>
+</div>
+
+<div id="p-absen" class="page">
+    <div class="card no-print">
+        <h3>Input Kehadiran Harian</h3>
+        <label style="font-size:12px; font-weight:bold;">Tanggal:</label>
+        <input type="date" id="a-tgl">
+        
+        <label style="font-size:12px; font-weight:bold; margin-top:5px; display:block;">Pilih Karyawan:</label>
+        <select id="a-karyawan"></select>
+        
+        <label style="font-size:12px; font-weight:bold; margin-top:5px; display:block;">Status Kehadiran:</label>
+        <select id="a-status">
+            <option value="H">✅ Hadir</option>
+            <option value="S">🤒 Sakit</option>
+            <option value="I">📝 Izin</option>
+            <option value="A">❌ Alpa (Tanpa Keterangan)</option>
+        </select>
+        
+        <input type="text" id="a-ket" placeholder="Keterangan (Opsional)">
+        <button class="btn-main" onclick="catatAbsen()">Simpan Absensi</button>
+    </div>
+</div>
+
+<div id="p-gaji" class="page">
+    <div class="card no-print">
+        <h3>Kalkulator Payroll (Penggajian)</h3>
+        <label style="font-size:12px; font-weight:bold;">Periode Gaji (Bulan & Tahun):</label>
+        <input type="month" id="g-periode">
+        
+        <label style="font-size:12px; font-weight:bold; margin-top:5px; display:block;">Pilih Karyawan:</label>
+        <select id="g-karyawan" onchange="tarikGapok()"></select>
+        
+        <label style="font-size:12px; font-weight:bold; margin-top:5px; display:block;">Gaji Pokok (Otomatis):</label>
+        <input type="number" id="g-gapok" readonly style="background:#f1f5f9;">
+        
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1;">
+                <label style="font-size:12px; font-weight:bold; margin-top:5px; display:block; color:var(--success);">+ Tunjangan (Rp):</label>
+                <input type="number" id="g-tunjangan" placeholder="0" oninput="hitungTotalGaji()" value="0">
+            </div>
+            <div style="flex:1;">
+                <label style="font-size:12px; font-weight:bold; margin-top:5px; display:block; color:var(--danger);">- Potongan/Kasbon (Rp):</label>
+                <input type="number" id="g-potongan" placeholder="0" oninput="hitungTotalGaji()" value="0">
+            </div>
+        </div>
+        
+        <label style="font-size:12px; font-weight:bold; margin-top:5px; display:block;">TOTAL TAKE HOME PAY (Rp):</label>
+        <input type="text" id="g-total" readonly style="background:#dcfce7; font-weight:bold; color:#166534; font-size:18px;">
+        
+        <button class="btn-main" onclick="simpanGaji()">Simpan & Buat Slip Gaji</button>
+    </div>
+
+    <div class="card">
+        <h3>Riwayat Penggajian (Bisa Cetak Slip)</h3>
+        <div style="overflow-x:auto;"><div id="view-gaji"></div></div>
+    </div>
+</div>
+
+<div id="p-laporan" class="page">
+    <div class="card">
+        <div class="header-print" id="kop-laporan">
+            <h2 id="kop-instansi" style="margin:0;">NAMA PERUSAHAAN</h2>
+            <p style="margin:5px 0 0 0;" id="kop-judul">LAPORAN HRD</p>
+            <p style="margin:5px 0 0 0; font-size:12px;" id="kop-tgl"></p>
+        </div>
+
+        <div class="no-print">
+            <h3>Cetak & Export Laporan</h3>
+            <label style="font-size:12px; font-weight:bold;">Pilih Laporan:</label>
+            <select id="lap-jenis" onchange="tampilLaporan()">
+                <option value="karyawan">Master Data Karyawan</option>
+                <option value="absen_all">Log Absensi Keseluruhan</option>
+            </select>
+            <div class="btn-row" style="margin-top:15px; margin-bottom:15px;">
+                <button class="btn-print" onclick="window.print()">🖨️ Cetak PDF</button>
+                <button class="btn-excel" onclick="exportExcel()">📊 Export Excel</button>
+            </div>
+            <hr style="border:0; border-top:1px solid #dbeafe; margin-bottom:15px;">
+        </div>
+
+        <div id="area-tabel-laporan" style="overflow-x:auto;"><div id="view-laporan"></div></div>
+        
+        <div id="area-slip-gaji"></div>
+
+        <div class="ttd-area" id="area-ttd">
+            <div>
+                <p>HRD Manager,</p><br><br><br>
+                <p style="font-weight:bold; text-decoration:underline;" id="ttd-nama">Nama HRD</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="p-seting" class="page no-print">
+    <div class="card">
+        <h3>Pengaturan HRD</h3>
+        <label style="font-size:12px; font-weight:bold;">Nama Perusahaan:</label>
+        <input type="text" id="set-instansi" placeholder="Contoh: PT. Sukses Makmur" oninput="simpanSet()">
+        
+        <label style="font-size:12px; font-weight:bold; margin-top:10px; display:block;">Nama Manajer HRD:</label>
+        <input type="text" id="set-bos" placeholder="Contoh: Bpk. HRD" oninput="simpanSet()">
+        
+        <hr style="margin:20px 0; border:0; border-top:1px solid #dbeafe;">
+        <button onclick="if(confirm('YAKIN HAPUS SEMUA DATA KARYAWAN, ABSENSI, DAN GAJI?')) { localStorage.clear(); location.reload(); }" style="background:var(--danger); color:white; padding:15px; font-weight:bold;">⚠️ RESET DATABASE HRD</button>
+    </div>
+</div>
+
+<div class="bottom-nav">
+    <button class="nav-item active" onclick="bukaTab('home')"><i>📊</i>Dash</button>
+    <button class="nav-item" onclick="bukaTab('pegawai')"><i>👥</i>Pegawai</button>
+    <button class="nav-item" onclick="bukaTab('absen')"><i>🕒</i>Absen</button>
+    <button class="nav-item" onclick="bukaTab('gaji')"><i>💰</i>Payroll</button>
+    <button class="nav-item" onclick="bukaTab('laporan')"><i>🖨️</i>Cetak</button>
+</div>
+<button onclick="bukaTab('seting')" class="no-print" style="position:fixed; top:15px; right:15px; width:40px; height:40px; border-radius:50%; background:white; box-shadow:0 2px 8px rgba(37,99,235,0.3); border:none; z-index:999; color:var(--primary);">⚙️</button>
+
+<script>
+    // Format Uang Rupiah
+    const formatRp = (angka) => { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka); }
+    // Format Tanggal
+    const formatTgl = (iso) => { if(!iso) return "-"; let p = iso.split('-'); return `${p[2]}/${p[1]}/${p[0]}`; }
+
+    // Database Lokal
+    let db_pegawai = JSON.parse(localStorage.getItem('hrpro_pegawai')) || [];
+    let db_absen = JSON.parse(localStorage.getItem('hrpro_absen')) || [];
+    let db_gaji = JSON.parse(localStorage.getItem('hrpro_gaji')) || [];
+    
+    // Setup Tanggal Hari Ini (Anti Masa Depan)
+    let dateObj = new Date();
+    let offset = dateObj.getTimezoneOffset() * 60000;
+    let localISOTime = (new Date(dateObj - offset)).toISOString().slice(0, 10);
+    let curMonth = localISOTime.slice(0, 7); // YYYY-MM
+    
+    document.getElementById('a-tgl').value = localISOTime;
+    document.getElementById('a-tgl').setAttribute('max', localISOTime);
+    document.getElementById('g-periode').value = curMonth;
+
+    function simpanPegawai() { localStorage.setItem('hrpro_pegawai', JSON.stringify(db_pegawai)); }
+    function simpanAbsen() { localStorage.setItem('hrpro_absen', JSON.stringify(db_absen)); }
+    function simpanDbGaji() { localStorage.setItem('hrpro_gaji', JSON.stringify(db_gaji)); }
+    function simpanSet() { 
+        localStorage.setItem('hrpro_instansi', document.getElementById('set-instansi').value); 
+        localStorage.setItem('hrpro_bos', document.getElementById('set-bos').value);
+        updateKop(); 
+    }
+
+    function updateKop() {
+        let instansi = localStorage.getItem('hrpro_instansi') || "NAMA PERUSAHAAN";
+        let bos = localStorage.getItem('hrpro_bos') || "HRD Manager";
+        document.getElementById('set-instansi').value = localStorage.getItem('hrpro_instansi') || "";
+        document.getElementById('set-bos').value = localStorage.getItem('hrpro_bos') || "";
+        document.getElementById('kop-instansi').innerText = instansi.toUpperCase();
+        document.getElementById('kop-tgl').innerText = "Dicetak pada: " + new Date().toLocaleString('id-ID');
+        document.getElementById('ttd-nama').innerText = bos;
+    }
+
+    // 1. FUNGSI MASTER KARYAWAN
+    function catatKaryawan() {
+        let nik = document.getElementById('k-nik').value.trim();
+        let nama = document.getElementById('k-nama').value.trim();
+        let dept = document.getElementById('k-dept').value.trim() || "-";
+        let jab = document.getElementById('k-jabatan').value.trim() || "-";
+        let stat = document.getElementById('k-status').value;
+        let gapok = parseInt(document.getElementById('k-gapok').value) || 0;
+        
+        if(!nik || !nama) return alert("NIK dan Nama wajib diisi!");
+        if(db_pegawai.find(x => x.nik === nik)) return alert("NIK sudah terdaftar!");
+        
+        db_pegawai.push({ id: Date.now(), nik: nik, nama: nama, dept: dept, jab: jab, stat: stat, gapok: gapok });
+        document.getElementById('k-nik').value = ""; document.getElementById('k-nama').value = ""; document.getElementById('k-dept').value = ""; 
+        document.getElementById('k-jabatan').value = ""; document.getElementById('k-gapok').value = "";
+        simpanPegawai(); refreshSemua(); alert("Data Karyawan Berhasil Disimpan!");
+    }
+
+    // 2. FUNGSI ABSENSI
+    function catatAbsen() {
+        let tgl = document.getElementById('a-tgl').value;
+        let id_peg = document.getElementById('a-karyawan').value;
+        let stat = document.getElementById('a-status').value;
+        let ket = document.getElementById('a-ket').value.trim() || "-";
+        
+        if(!id_peg) return alert("Pilih karyawan terlebih dahulu!");
+        if(tgl > localISOTime) { alert("Tidak bisa absen untuk besok/masa depan!"); document.getElementById('a-tgl').value = localISOTime; return; }
+        
+        // Cek double absen hari ini
+        let cek = db_absen.find(x => x.tgl === tgl && x.id_peg == id_peg);
+        if(cek) {
+            if(!confirm("Karyawan ini sudah di-absen pada tanggal tersebut. Timpa data?")) return;
+            cek.stat = stat; cek.ket = ket; // Update
+        } else {
+            db_absen.push({ id: Date.now(), tgl: tgl, id_peg: parseInt(id_peg), stat: stat, ket: ket });
+        }
+        
+        document.getElementById('a-ket').value = "";
+        simpanAbsen(); refreshSemua(); alert("Absensi Berhasil Dicatat!");
+    }
+
+    // 3. FUNGSI PAYROLL
+    function tarikGapok() {
+        let id_peg = document.getElementById('g-karyawan').value;
+        let peg = db_pegawai.find(x => x.id == id_peg);
+        if(peg) {
+            document.getElementById('g-gapok').value = peg.gapok;
+            hitungTotalGaji();
+        }
+    }
+
+    function hitungTotalGaji() {
+        let gapok = parseInt(document.getElementById('g-gapok').value) || 0;
+        let tunj = parseInt(document.getElementById('g-tunjangan').value) || 0;
+        let pot = parseInt(document.getElementById('g-potongan').value) || 0;
+        let total = gapok + tunj - pot;
+        document.getElementById('g-total').value = formatRp(total);
+        return total;
+    }
+
+    function simpanGaji() {
+        let per = document.getElementById('g-periode').value;
+        let id_peg = document.getElementById('g-karyawan').value;
+        let gapok = parseInt(document.getElementById('g-gapok').value) || 0;
+        let tunj = parseInt(document.getElementById('g-tunjangan').value) || 0;
+        let pot = parseInt(document.getElementById('g-potongan').value) || 0;
+        let total = hitungTotalGaji();
+        
+        if(!id_peg) return alert("Pilih karyawan!");
+        
+        // Cek double gaji bulan ini
+        let cek = db_gaji.find(x => x.per === per && x.id_peg == id_peg);
+        if(cek) {
+            if(!confirm(`Gaji periode ${per} untuk karyawan ini sudah ada. Timpa data?`)) return;
+            cek.gapok = gapok; cek.tunj = tunj; cek.pot = pot; cek.total = total;
+        } else {
+            db_gaji.push({ id: Date.now(), per: per, id_peg: parseInt(id_peg), gapok: gapok, tunj: tunj, pot: pot, total: total, tgl_cetak: localISOTime });
+        }
+        
+        document.getElementById('g-tunjangan').value = "0"; document.getElementById('g-potongan').value = "0";
+        simpanDbGaji(); refreshSemua(); alert("Gaji berhasil diproses!");
+    }
+
+    // 4. FUNGSI CETAK SLIP GAJI SPESIFIK
+    function cetakSlip(id_gaji) {
+        let gaji = db_gaji.find(x => x.id == id_gaji);
+        let peg = db_pegawai.find(x => x.id == gaji.id_peg);
+        let instansi = localStorage.getItem('hrpro_instansi') || "NAMA PERUSAHAAN";
+        
+        let html = `
+        <div class="slip-box">
+            <h2 style="text-align:center; margin-top:0; border-bottom:2px dashed #000; padding-bottom:10px;">SLIP GAJI KARYAWAN<br><small style="font-size:14px;">${instansi.toUpperCase()}</small></h2>
+            <p><b>Periode Gaji :</b> ${gaji.per}</p>
+            <p><b>Tanggal Cetak:</b> ${formatTgl(gaji.tgl_cetak)}</p>
+            <table style="width:100%; margin-top:10px; border:none;">
+                <tr><td style="border:none; width:120px;">NIK</td><td style="border:none;">: ${peg.nik}</td></tr>
+                <tr><td style="border:none;">Nama Lengkap</td><td style="border:none;">: <b>${peg.nama}</b></td></tr>
+                <tr><td style="border:none;">Jabatan / Dept</td><td style="border:none;">: ${peg.jab} / ${peg.dept}</td></tr>
+            </table>
+            <hr style="border:1px dashed #000; margin:15px 0;">
+            <p style="font-weight:bold;">RINCIAN PENGHASILAN:</p>
+            <table style="width:100%; border:none;">
+                <tr><td style="border:none;">Gaji Pokok</td><td style="border:none; text-align:right;">${formatRp(gaji.gapok)}</td></tr>
+                <tr><td style="border:none;">Tunjangan</td><td style="border:none; text-align:right;">${formatRp(gaji.tunj)}</td></tr>
+                <tr><td style="border:none; color:red;">Potongan / Kasbon</td><td style="border:none; text-align:right;">- ${formatRp(gaji.pot)}</td></tr>
+            </table>
+            <hr style="border:1px dashed #000; margin:15px 0;">
+            <table style="width:100%; border:none;">
+                <tr><td style="border:none; font-weight:bold; font-size:16px;">TAKE HOME PAY</td><td style="border:none; text-align:right; font-weight:bold; font-size:16px;">${formatRp(gaji.total)}</td></tr>
+            </table>
+            <br><br>
+            <table style="width:100%; border:none; text-align:center; margin-top:30px;">
+                <tr><td style="border:none;">Penerima,</td><td style="border:none;">HRD Manager,</td></tr>
+                <tr><td style="border:none; height:80px;"></td><td style="border:none;"></td></tr>
+                <tr><td style="border:none; text-decoration:underline;">${peg.nama}</td><td style="border:none; text-decoration:underline;">${localStorage.getItem('hrpro_bos') || 'HRD'}</td></tr>
+            </table>
+        </div>`;
+        
+        // Pindah ke tab laporan, sembunyikan tabel laporan, tampilkan slip
+        bukaTab('laporan');
+        document.getElementById('area-tabel-laporan').style.display = 'none';
+        document.getElementById('kop-laporan').style.display = 'none';
+        document.getElementById('area-ttd').style.display = 'none';
+        document.getElementById('area-slip-gaji').innerHTML = html;
+        document.getElementById('area-slip-gaji').style.display = 'block';
+        
+        setTimeout(() => { window.print(); restoreLaporan(); }, 500);
+    }
+
+    function restoreLaporan() {
+        document.getElementById('area-tabel-laporan').style.display = 'block';
+        document.getElementById('kop-laporan').style.display = 'block';
+        document.getElementById('area-ttd').style.display = 'block';
+        document.getElementById('area-slip-gaji').style.display = 'none';
+        document.getElementById('area-slip-gaji').innerHTML = "";
+    }
+
+    // 5. REFRESH & TAMPILAN
+    function tampilLaporan() {
+        let jenis = document.getElementById('lap-jenis').value;
+        let html = "";
+        
+        if(jenis === 'karyawan') {
+            document.getElementById('kop-judul').innerText = "MASTER DATA KARYAWAN";
+            html = "<table><tr><th>NIK</th><th>Nama</th><th>Dept/Jabatan</th><th>Status</th><th class='text-right'>Gaji Pokok</th></tr>";
+            db_pegawai.forEach(x => { html += `<tr><td>${x.nik}</td><td><b>${x.nama}</b></td><td>${x.dept}<br><span style="font-size:10px;">${x.jab}</span></td><td>${x.stat}</td><td class='text-right'>${formatRp(x.gapok)}</td></tr>`; });
+            html += "</table>";
+        } else if(jenis === 'absen_all') {
+            document.getElementById('kop-judul').innerText = "REKAP LOG ABSENSI KESELURUHAN";
+            let data = db_absen.slice().sort((a,b) => new Date(b.tgl) - new Date(a.tgl));
+            html = "<table><tr><th>Tanggal</th><th>NIK - Nama</th><th>Status</th><th>Keterangan</th></tr>";
+            data.forEach(x => { 
+                let peg = db_pegawai.find(p => p.id == x.id_peg);
+                let badge = x.stat==='H'?"b-h":x.stat==='S'?"b-s":x.stat==='I'?"b-i":"b-a";
+                let textStat = x.stat==='H'?"Hadir":x.stat==='S'?"Sakit":x.stat==='I'?"Izin":"Alpa";
+                html += `<tr><td>${formatTgl(x.tgl)}</td><td>${peg?peg.nik+" - "+peg.nama:"Terhapus"}</td><td><span class='${badge}'>${textStat}</span></td><td>${x.ket}</td></tr>`; 
+            });
+            html += "</table>";
+        }
+        document.getElementById('view-laporan').innerHTML = html;
+    }
+
+    function refreshSemua() {
+        updateKop();
+        
+        // Update Select Dropdowns
+        let optPeg = "<option value='' disabled selected>-- Pilih Karyawan --</option>";
+        db_pegawai.forEach(x => { optPeg += `<option value="${x.id}">${x.nik} - ${x.nama}</option>`; });
+        document.getElementById('a-karyawan').innerHTML = optPeg;
+        document.getElementById('g-karyawan').innerHTML = optPeg;
+        
+        // Tampil Pegawai Tab
+        let htmlPeg = "<table><tr><th>NIK</th><th>Nama & Info</th><th class='text-right'>Status</th></tr>";
+        if(db_pegawai.length===0) htmlPeg += "<tr><td colspan='3' align='center'>Data Kosong</td></tr>";
+        db_pegawai.forEach(x => { htmlPeg += `<tr><td>${x.nik}</td><td><b>${x.nama}</b><br><span style="font-size:10px; color:#64748b;">${x.dept} | ${x.jab}</span></td><td class='text-right'>${x.stat}</td></tr>`; });
+        htmlPeg += "</table>";
+        document.getElementById('view-pegawai').innerHTML = htmlPeg;
+
+        // Tampil Gaji Tab
+        let htmlGaji = "<table><tr><th>Periode</th><th>Nama</th><th class='text-right'>Take Home Pay</th><th>Aksi</th></tr>";
+        if(db_gaji.length===0) htmlGaji += "<tr><td colspan='4' align='center'>Data Kosong</td></tr>";
+        db_gaji.slice().sort((a,b) => b.id - a.id).forEach(x => {
+            let peg = db_pegawai.find(p => p.id == x.id_peg);
+            htmlGaji += `<tr><td>${x.per}</td><td><b>${peg?peg.nama:"-"}</b></td><td class='text-right' style='color:#166534; font-weight:bold;'>${formatRp(x.total)}</td><td><button class='btn-slip' onclick='cetakSlip(${x.id})'>🖨️ Cetak Slip</button></td></tr>`;
+        });
+        htmlGaji += "</table>";
+        document.getElementById('view-gaji').innerHTML = htmlGaji;
+
+        // Dashboard Stats
+        document.getElementById('v-karyawan').innerText = db_pegawai.length;
+        let absenHariIni = db_absen.filter(x => x.tgl === localISOTime);
+        let h=0, i=0, a=0;
+        let dashAbsen = "<table><tr><th>Nama Karyawan</th><th class='text-right'>Status</th></tr>";
+        absenHariIni.forEach(x => {
+            if(x.stat === 'H') h++; else if(x.stat === 'S' || x.stat === 'I') i++; else a++;
+            let peg = db_pegawai.find(p => p.id == x.id_peg);
+            let badge = x.stat==='H'?"b-h":x.stat==='S'?"b-s":x.stat==='I'?"b-i":"b-a";
+            let textStat = x.stat==='H'?"Hadir":x.stat==='S'?"Sakit":x.stat==='I'?"Izin":"Alpa";
+            dashAbsen += `<tr><td><b>${peg?peg.nama:"-"}</b><br><span style="font-size:10px;">${x.ket}</span></td><td class='text-right'><span class='${badge}'>${textStat}</span></td></tr>`;
+        });
+        if(absenHariIni.length===0) dashAbsen += "<tr><td colspan='2' align='center'>Belum ada absensi diinput hari ini.</td></tr>";
+        dashAbsen += "</table>";
+        
+        document.getElementById('v-hadir').innerText = h;
+        document.getElementById('v-izin').innerText = i;
+        document.getElementById('v-alpa').innerText = a;
+        document.getElementById('view-absen-dash').innerHTML = dashAbsen;
+
+        tampilLaporan();
+    }
+
+    // EXPORT EXCEL
+    function exportExcel() {
+        let jenis = document.getElementById('lap-jenis').value;
+        let csv = "";
+        let filename = "";
+        
+        if(jenis === 'karyawan') {
+            csv = "NIK,Nama Lengkap,Departemen,Jabatan,Status,Gaji Pokok\n";
+            db_pegawai.forEach(x => { csv += `"${x.nik}","${x.nama}","${x.dept}","${x.jab}","${x.stat}",${x.gapok}\n`; });
+            filename = "Master_Data_Karyawan.csv";
+        } else {
+            csv = "Tanggal,NIK,Nama Karyawan,Status Absen,Keterangan\n";
+            let data = db_absen.slice().sort((a,b) => new Date(b.tgl) - new Date(a.tgl));
+            data.forEach(x => { 
+                let peg = db_pegawai.find(p => p.id == x.id_peg);
+                let textStat = x.stat==='H'?"Hadir":x.stat==='S'?"Sakit":x.stat==='I'?"Izin":"Alpa";
+                csv += `${x.tgl},"${peg?peg.nik:"-"}","${peg?peg.nama:"-"}","${textStat}","${x.ket}"\n`; 
+            });
+            filename = "Rekap_Absensi_Karyawan.csv";
+        }
+        
+        let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement("a"); a.href = url;
+        a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+
+    function bukaTab(id) { 
+        document.querySelectorAll('.page, .nav-item').forEach(e => e.classList.remove('active')); 
+        document.getElementById('p-'+id).classList.add('active'); 
+        let navs = document.querySelectorAll('.bottom-nav .nav-item');
+        navs.forEach(n => { if(n.getAttribute('onclick') === `bukaTab('${id}')`) n.classList.add('active'); });
+        restoreLaporan(); // Jaga-jaga kalau habis cetak slip
+    }
+    
+    refreshSemua();
+</script>
+</body>
+</html>
