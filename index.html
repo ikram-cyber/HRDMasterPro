@@ -27,11 +27,13 @@
         .nav-item i { font-size: 18px; margin-bottom: 2px; font-style: normal; }
         label { font-weight: 600; font-size: 11px; color: #475569; }
         
+        .btn-float { position: fixed; top: 12px; right: 12px; background: white; color: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.15); font-size: 18px; z-index: 99; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
         /* Print Styles */
         @media print {
             body { background: white; padding: 0; font-size: 12pt; }
             .card { border: none; box-shadow: none; padding: 0; }
-            .no-print, .bottom-nav { display: none !important; }
+            .no-print, .bottom-nav, .btn-float { display: none !important; }
             .slip-gaji { display: block !important; font-family: 'Courier New', Courier, monospace; width: 100%; max-width: 800px; margin: 0 auto; }
             table { font-size: 10pt; }
             table, th, td { border-color: #000; }
@@ -41,10 +43,12 @@
 </head>
 <body>
 
+<button class="btn-float no-print" onclick="bukaTab('seting')">⚙️</button>
+
 <div id="p-home" class="page active">
-    <div class="card no-print" style="background:var(--primary); color:white;">
-        <h2 style="margin:0; font-size:18px;">Dashboard HRD</h2>
-        <p style="margin:5px 0 0 0; font-size:12px;" id="dash-tgl"></p>
+    <div class="card no-print" style="background:var(--primary); color:white; padding-right:50px;">
+        <h2 style="margin:0; font-size:18px;" id="dash-pt">NAMA PERUSAHAAN</h2>
+        <p style="margin:5px 0 0 0; font-size:12px;">Dashboard HRD | <span id="dash-tgl"></span></p>
     </div>
     <div class="grid-2 no-print">
         <div class="card" style="text-align:center;"><h3>Total Pegawai</h3><h1 style="margin:0;" id="v-tot-pegawai">0</h1></div>
@@ -157,6 +161,20 @@
     <div id="area-slip" style="display:none;" class="slip-gaji"></div>
 </div>
 
+<div id="p-seting" class="page">
+    <div class="card no-print">
+        <h3>Pengaturan Profil Perusahaan</h3>
+        <label>Nama Perusahaan / Toko:</label>
+        <input type="text" id="set-pt" oninput="simpanSet()" placeholder="Contoh: PT. Makmur Jaya">
+        
+        <label>Nama Manajer HRD / Pimpinan:</label>
+        <input type="text" id="set-bos" oninput="simpanSet()" placeholder="Contoh: Bpk. HRD">
+        
+        <hr style="margin:20px 0; border:1px solid #e2e8f0;">
+        <button class="btn-danger" style="padding:12px;" onclick="if(confirm('YAKIN HAPUS SEMUA DATA KARYAWAN & GAJI?')) { localStorage.clear(); location.reload(); }">⚠️ RESET DATABASE HRD</button>
+    </div>
+</div>
+
 <div class="bottom-nav">
     <button class="nav-item active" onclick="bukaTab('home')"><i>📊</i>Dash</button>
     <button class="nav-item" onclick="bukaTab('pegawai')"><i>👥</i>Pegawai</button>
@@ -185,6 +203,13 @@
     
     document.getElementById('dash-tgl').innerText = now.toLocaleDateString('id-ID', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
     setVal('a-tgl', today); setVal('g-per', curMonth);
+
+    // CORE: PENGATURAN
+    function simpanSet() {
+        localStorage.setItem('hr_pt', getVal('set-pt'));
+        localStorage.setItem('hr_boss', getVal('set-bos'));
+        refreshUI();
+    }
 
     // CORE: MASTER KARYAWAN
     function simpanKaryawan() {
@@ -229,19 +254,15 @@
         let peg = db_peg.find(x => x.id == id_peg);
         if(!peg) return;
         
-        // Tarik Master
         setVal('g-gapok', peg.gapok); setVal('g-tunj', peg.tunj);
         
-        // Auto hitung lembur bulan ini (Misal rate Rp 20.000/jam)
         let rateLembur = 20000;
         let jamLembur = db_abs.filter(x => x.id_peg == id_peg && x.tgl.startsWith(per)).reduce((sum, curr) => sum + parseInt(curr.lembur), 0);
         setVal('g-lembur', jamLembur * rateLembur);
         
-        // Auto hitung potongan BPJS (Misal JHT 2%, Kes 1% dari Gapok)
         setVal('g-pot-tk', peg.bpjs_tk ? Math.round(peg.gapok * 0.02) : 0);
         setVal('g-pot-kes', peg.bpjs_kes ? Math.round(peg.gapok * 0.01) : 0);
         
-        // Auto hitung Alpa (Potong per hari alpa misal Rp 100.000)
         let jmlAlpa = db_abs.filter(x => x.id_peg == id_peg && x.tgl.startsWith(per) && x.stat === 'Alpa').length;
         setVal('g-pot-absen', jmlAlpa * 100000);
         
@@ -279,14 +300,17 @@
         let pay = db_pay.find(x => x.id == id_pay);
         let peg = db_peg.find(x => x.id == pay.id_peg);
         
+        let pt = localStorage.getItem('hr_pt') || 'NAMA PERUSAHAAN / TOKO';
+        let bos = localStorage.getItem('hr_boss') || 'HRD Manager';
+        
         let totalPen = pay.pendapatan.gapok + pay.pendapatan.tunj + pay.pendapatan.lembur + pay.pendapatan.bonus;
         let totalPot = pay.potongan.kes + pay.potongan.tk + pay.potongan.absen + pay.potongan.kasbon;
 
         let html = `
         <div style="border:1px solid #000; padding:20px;">
             <div style="text-align:center; border-bottom:2px solid #000; margin-bottom:15px; padding-bottom:10px;">
-                <h2 style="margin:0;">SLIP GAJI KARYAWAN</h2>
-                <p style="margin:0;">Periode: ${pay.per} | Dicetak: ${pay.tgl_cetak}</p>
+                <h2 style="margin:0;">${pt.toUpperCase()}</h2>
+                <p style="margin:0;">SLIP GAJI KARYAWAN | Periode: ${pay.per}</p>
             </div>
             <table style="width:100%; margin-bottom:15px; border:none; font-size:12px;">
                 <tr><td style="width:100px; border:none;">NIK / Nama</td><td style="border:none;">: <b>${peg.nik} - ${peg.nama}</b></td><td style="width:100px; border:none;">Dept / Jabatan</td><td style="border:none;">: ${peg.dept} / ${peg.jab}</td></tr>
@@ -323,7 +347,7 @@
             <table style="width:100%; border:none; margin-top:30px; text-align:center;">
                 <tr><td style="border:none; width:50%;">Penerima,</td><td style="border:none; width:50%;">HRD & Finance,</td></tr>
                 <tr><td style="border:none; height:70px;"></td><td style="border:none;"></td></tr>
-                <tr><td style="border:none;">( ${peg.nama} )</td><td style="border:none;">( .................... )</td></tr>
+                <tr><td style="border:none;">( ${peg.nama} )</td><td style="border:none; font-weight:bold; text-decoration:underline;">( ${bos} )</td></tr>
             </table>
         </div>`;
         
@@ -358,6 +382,12 @@
 
     // UI REFRESH
     function refreshUI() {
+        let pt = localStorage.getItem('hr_pt') || 'NAMA PERUSAHAAN';
+        let bos = localStorage.getItem('hr_boss') || '';
+        document.getElementById('dash-pt').innerText = pt.toUpperCase();
+        setVal('set-pt', pt === 'NAMA PERUSAHAAN' ? '' : pt);
+        setVal('set-bos', bos);
+
         let optPeg = "<option value=''>-- Pilih Karyawan --</option>";
         db_peg.forEach(x => optPeg += `<option value="${x.id}">${x.nik} - ${x.nama}</option>`);
         document.getElementById('a-peg').innerHTML = optPeg;
