@@ -3,62 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HRD Master Pro Fixed</title>
+    <title>HRD Master Pro - Versi Utuh</title>
     <style>
-        :root { --primary: #2563eb; --dark: #1e40af; --success: #10b981; --danger: #ef4444; --warn: #f59e0b; --bg: #f3f4f6; --text: #1f2937; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 80px; font-size: 13px; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 12px; border: 1px solid #e5e7eb; }
-        h3 { margin-top: 0; color: var(--dark); border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; font-size: 14px; }
-        input, select, button { width: 100%; padding: 10px; margin: 4px 0 10px 0; border-radius: 4px; border: 1px solid #d1d5db; box-sizing: border-box; font-size: 13px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        :root { --primary: #2563eb; --dark: #1e40af; --success: #10b981; --danger: #ef4444; --warn: #f59e0b; --bg: #f3f4f6; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; padding-bottom: 80px; font-size: 13px; }
+        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        h3 { margin: 0 0 10px 0; color: var(--dark); border-bottom: 2px solid #eee; padding-bottom: 5px; font-size: 15px; }
+        input, select, button { width: 100%; padding: 12px; margin: 5px 0 10px 0; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn-main { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
-        .btn-danger { background: var(--danger); color: white; border: none; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 11px; }
-        th, td { padding: 8px 5px; border-bottom: 1px solid #e5e7eb; text-align: left; }
-        th { background: #f9fafb; font-weight: bold; }
-        .badge { padding: 2px 5px; border-radius: 4px; color: white; font-size: 10px; }
-        .bg-success { background: var(--success); } .bg-danger { background: var(--danger); } .bg-warn { background: var(--warn); }
-        .page { display: none; } .page.active { display: block; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #e5e7eb; z-index:100; }
-        .nav-item { border: none; background: none; font-size: 10px; color: #6b7280; display: flex; flex-direction: column; align-items: center; width: 20%; }
+        .btn-danger { background: var(--danger); color: white; border: none; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th, td { padding: 10px 5px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background: #f8f9fa; }
+        .page { display: none; } .active { display: block; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; }
+        .nav-item { border: none; background: none; font-size: 11px; color: #666; display: flex; flex-direction: column; align-items: center; width: 20%; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
-        @media print { .bottom-nav, button, .no-print { display: none !important; } }
+        @media print { .no-print { display: none; } }
     </style>
 </head>
 <body>
 
 <div id="p-home" class="page active">
     <div class="card" style="background:var(--primary); color:white;">
-        <h2 id="dash-pt" style="margin:0; font-size:16px;">LOADING...</h2>
-        <p id="dash-tgl" style="margin:5px 0 0 0; font-size:11px;"></p>
+        <h2 id="pt-name" style="margin:0;">HRD MASTER PRO</h2>
+        <p id="tgl-skrg" style="margin:5px 0 0 0; opacity:0.8;"></p>
     </div>
-    <div class="grid-2">
-        <div class="card" style="text-align:center;"><h3>Karyawan</h3><h1 id="v-tot-kar">0</h1></div>
-        <div class="card" style="text-align:center;"><h3>Hadir Hari Ini</h3><h1 id="v-tot-hadir">0</h1></div>
+    <div class="grid">
+        <div class="card" style="text-align:center;"><h3>Karyawan</h3><h1 id="count-k">0</h1></div>
+        <div class="card" style="text-align:center;"><h3>Hadir Hari Ini</h3><h1 id="count-h">0</h1></div>
     </div>
 </div>
 
 <div id="p-karyawan" class="page">
     <div class="card">
-        <h3>Input/Edit Karyawan</h3>
-        <input type="text" id="k-id" placeholder="ID / NIK">
+        <h3>Tambah/Edit Data Utuh</h3>
+        <input type="text" id="k-id" placeholder="ID/NIK">
         <input type="text" id="k-nama" placeholder="Nama Lengkap">
-        <div class="grid-2">
-            <input type="text" id="k-jabatan" placeholder="Jabatan">
-            <input type="number" id="k-gaji" placeholder="Gaji Pokok/Hari">
+        <input type="text" id="k-jabatan" placeholder="Jabatan">
+        <div class="grid">
+            <div><label>Gaji Pokok</label><input type="number" id="k-gp" value="0"></div>
+            <div><label>Uang Makan</label><input type="number" id="k-um" value="0"></div>
+            <div><label>Uang Transport</label><input type="number" id="k-ut" value="0"></div>
+            <div><label>Lembur/Jam</label><input type="number" id="k-ul" value="0"></div>
         </div>
-        <button class="btn-main" onclick="simpanKaryawan()">💾 SIMPAN DATA</button>
-        <button class="btn-danger" id="btn-batal-k" style="display:none;" onclick="batalEdit()">BATAL</button>
+        <button class="btn-main" onclick="simpanKaryawan()">💾 SIMPAN DATA KARYAWAN</button>
     </div>
-    <div class="card"><h3>Daftar Karyawan</h3><div id="view-karyawan"></div></div>
+    <div class="card"><h3>Daftar Pegawai</h3><div id="list-k"></div></div>
 </div>
 
 <div id="p-absen" class="page">
     <div class="card">
-        <h3>Absensi & Lembur</h3>
-        <label>Tanggal</label><input type="date" id="a-tgl">
-        <label>Pilih Karyawan</label><select id="a-kar"></select>
-        <div class="grid-2">
+        <h3>Input Absensi & Lembur</h3>
+        <label>Tanggal</label>
+        <input type="date" id="a-tgl">
+        <label>Pilih Karyawan</label>
+        <select id="a-kar"></select>
+        <div class="grid">
             <select id="a-stat">
                 <option value="HADIR">HADIR</option>
                 <option value="SAKIT">SAKIT</option>
@@ -67,129 +69,128 @@
             </select>
             <input type="number" id="a-lembur" placeholder="Jam Lembur" value="0">
         </div>
-        <button class="btn-main" onclick="simpanAbsen()">⚡ CATAT ABSEN</button>
+        <button class="btn-main" onclick="simpanAbsen()">⚡ CATAT KEHADIRAN</button>
     </div>
-    <div class="card"><h3>Riwayat Absen</h3><div id="view-absen"></div></div>
+    <div class="card"><h3>Riwayat Absen</h3><div id="list-a"></div></div>
 </div>
 
-<div id="p-gaji" class="page">
+<div id="p-slip" class="page">
     <div class="card no-print">
-        <h3>Cetak Slip Gaji</h3>
-        <input type="month" id="g-bln">
-        <select id="g-kar"></select>
-        <input type="number" id="g-tarif" placeholder="Tarif Lembur/Jam" value="20000">
-        <button class="btn-main" onclick="hitungGaji()">💰 LIHAT SLIP</button>
+        <h3>Laporan & Slip Gaji</h3>
+        <input type="month" id="s-bln">
+        <select id="s-kar"></select>
+        <button class="btn-main" onclick="buatSlip()">💰 GENERATE SLIP GAJI</button>
     </div>
-    <div id="view-slip" class="card" style="display:none;"></div>
+    <div id="slip-area" class="card" style="display:none;"></div>
 </div>
 
-<div id="p-set" class="page">
-    <div class="card">
-        <h3>Seting</h3>
-        <input type="text" id="set-pt" placeholder="Nama Perusahaan" oninput="simpanSet()">
-        <button class="btn-danger" onclick="hapusSemua()">⚠️ HAPUS SEMUA DATA</button>
-    </div>
-</div>
-
-<div class="bottom-nav">
+<div class="bottom-nav no-print">
     <button class="nav-item active" onclick="buka('home')">📊<br>Dash</button>
     <button class="nav-item" onclick="buka('karyawan')">👥<br>Pegawai</button>
     <button class="nav-item" onclick="buka('absen')">📝<br>Absen</button>
-    <button class="nav-item" onclick="buka('gaji')">💰<br>Gaji</button>
-    <button class="nav-item" onclick="buka('set')">⚙️<br>Seting</button>
+    <button class="nav-item" onclick="buka('slip')">💰<br>Slip</button>
 </div>
 
 <script>
-    // FIX DATABASE: Coba ambil kunci lama kalau kunci baru kosong
-    let db_k = JSON.parse(localStorage.getItem('hr_kar')) || JSON.parse(localStorage.getItem('karyawan')) || [];
-    let db_a = JSON.parse(localStorage.getItem('hr_absen')) || JSON.parse(localStorage.getItem('absensi')) || [];
+    // DATA MENGGUNAKAN KUNCI LAMA AGAR TIDAK HILANG
+    let db_k = JSON.parse(localStorage.getItem('hr_kar')) || [];
+    let db_a = JSON.parse(localStorage.getItem('hr_absen')) || [];
     
-    let now = new Date();
-    let hariIni = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0,10);
+    // KUNCI TANGGAL (MAKSIMAL HARI INI)
+    let tgl_obj = new Date();
+    let hariIni = new Date(tgl_obj.getTime() - (tgl_obj.getTimezoneOffset() * 60000)).toISOString().slice(0,10);
     document.getElementById('a-tgl').value = hariIni;
-    document.getElementById('a-tgl').setAttribute('max', hariIni); // KUNCI TANGGAL 28 DST
-    document.getElementById('dash-tgl').innerText = now.toDateString();
-
-    function simpanSet() { localStorage.setItem('hr_pt', document.getElementById('set-pt').value); render(); }
+    document.getElementById('a-tgl').setAttribute('max', hariIni);
+    document.getElementById('tgl-skrg').innerText = tgl_obj.toDateString();
 
     function simpanKaryawan() {
         let id = document.getElementById('k-id').value;
-        let nm = document.getElementById('k-nama').value;
-        if(!id || !nm) return alert("Isi Nama & ID!");
+        if(!id) return alert("ID Wajib isi!");
+        let k = {
+            id: id,
+            nama: document.getElementById('k-nama').value,
+            jabatan: document.getElementById('k-jabatan').value,
+            gp: parseInt(document.getElementById('k-gp').value) || 0,
+            um: parseInt(document.getElementById('k-um').value) || 0,
+            ut: parseInt(document.getElementById('k-ut').value) || 0,
+            ul: parseInt(document.getElementById('k-ul').value) || 0
+        };
         let idx = db_k.findIndex(x => x.id === id);
-        let obj = {id:id, nama:nm, jabatan:document.getElementById('k-jabatan').value, gaji:document.getElementById('k-gaji').value};
-        if(idx > -1) db_k[idx] = obj; else db_k.push(obj);
+        if(idx > -1) db_k[idx] = k; else db_k.push(k);
         localStorage.setItem('hr_kar', JSON.stringify(db_k));
-        batalEdit(); render();
+        location.reload();
     }
 
     function simpanAbsen() {
         let tgl = document.getElementById('a-tgl').value;
-        let kar = document.getElementById('a-kar').value;
-        if(!kar) return alert("Pilih karyawan!");
-        db_a.push({tgl:tgl, id:kar, status:document.getElementById('a-stat').value, lembur:document.getElementById('a-lembur').value});
+        let id = document.getElementById('a-kar').value;
+        if(!id) return alert("Pilih Karyawan!");
+        db_a.push({
+            tgl: tgl, 
+            id: id, 
+            stat: document.getElementById('a-stat').value, 
+            lbr: parseInt(document.getElementById('a-lembur').value) || 0
+        });
         localStorage.setItem('hr_absen', JSON.stringify(db_a));
-        alert("Selesai!"); render();
+        alert("Absen Tersimpan!"); render();
     }
 
-    function hitungGaji() {
-        let id = document.getElementById('g-kar').value;
-        let bln = document.getElementById('g-bln').value;
+    function buatSlip() {
+        let id = document.getElementById('s-kar').value;
+        let bln = document.getElementById('s-bln').value;
         let k = db_k.find(x => x.id === id);
-        let absen = db_a.filter(x => x.id === id && x.tgl.startsWith(bln));
-        let hadir = absen.filter(x => x.status === "HADIR").length;
-        let totLembur = absen.reduce((s, x) => s + (parseInt(x.lembur)||0), 0);
-        let gapok = hadir * (parseInt(k.gaji)||0);
-        let uLembur = totLembur * (parseInt(document.getElementById('g-tarif').value)||0);
+        let abs = db_a.filter(x => x.id === id && x.tgl.startsWith(bln));
         
-        document.getElementById('view-slip').innerHTML = `
-            <h2 style="text-align:center">${localStorage.getItem('hr_pt')||'SLIP GAJI'}</h2>
-            <hr>
-            Nama: ${k.nama}<br>Periode: ${bln}<br>Hadir: ${hadir} Hari<hr>
-            Gapok: Rp ${gapok.toLocaleString()}<br>Lembur: Rp ${uLembur.toLocaleString()}<br>
-            <b>Total: Rp ${(gapok+uLembur).toLocaleString()}</b><br><br>
-            <button class="btn-main no-print" onclick="window.print()">PRINT</button>
+        let h = abs.filter(x => x.stat === "HADIR").length;
+        let tl = abs.reduce((s, x) => s + x.lbr, 0);
+        
+        let t_gp = h * k.gp;
+        let t_um = h * k.um;
+        let t_ut = h * k.ut;
+        let t_ul = tl * k.ul;
+        let total = t_gp + t_um + t_ut + t_ul;
+
+        document.getElementById('slip-area').innerHTML = `
+            <div style="text-align:center; border-bottom:1px solid #000;">
+                <h3>SLIP GAJI PEGAWAI</h3>
+                <p>${bln}</p>
+            </div>
+            <p>Nama: <b>${k.nama}</b> (${k.jabatan})</p>
+            <table border="0" style="width:100%">
+                <tr><td>Gaji Pokok (${h}x)</td><td align="right">Rp ${t_gp.toLocaleString()}</td></tr>
+                <tr><td>Uang Makan (${h}x)</td><td align="right">Rp ${t_um.toLocaleString()}</td></tr>
+                <tr><td>Uang Transport (${h}x)</td><td align="right">Rp ${t_ut.toLocaleString()}</td></tr>
+                <tr><td>Lembur (${tl} Jam)</td><td align="right">Rp ${t_ul.toLocaleString()}</td></tr>
+                <tr style="font-weight:bold; border-top:1px solid #000;">
+                    <td>TOTAL DITERIMA</td><td align="right">Rp ${total.toLocaleString()}</td>
+                </tr>
+            </table><br>
+            <button class="btn-main no-print" onclick="window.print()">PRINT SLIP</button>
         `;
-        document.getElementById('view-slip').style.display = 'block';
+        document.getElementById('slip-area').style.display = 'block';
     }
 
     function render() {
-        document.getElementById('dash-pt').innerText = localStorage.getItem('hr_pt') || "HRD MASTER PRO";
-        document.getElementById('v-tot-kar').innerText = db_k.length;
-        document.getElementById('v-tot-hadir').innerText = db_a.filter(x => x.tgl === hariIni && x.status === "HADIR").length;
+        document.getElementById('count-k').innerText = db_k.length;
+        document.getElementById('count-h').innerText = db_a.filter(x => x.tgl === hariIni && x.stat === "HADIR").length;
         
-        let hK = "<table><tr><th>ID</th><th>Nama</th><th>Aksi</th></tr>";
-        let opt = "<option value=''>- Pilih -</option>";
+        let listK = "<table><tr><th>ID</th><th>Nama</th><th>Gaji/H</th></tr>";
+        let opt = "<option value=''>-- Pilih --</option>";
         db_k.forEach(x => {
-            hK += `<tr><td>${x.id}</td><td>${x.nama}</td><td><button onclick="editK('${x.id}')">✏️</button></td></tr>`;
+            let totalHarian = x.gp + x.um + x.ut;
+            listK += `<tr><td>${x.id}</td><td>${x.nama}</td><td>${totalHarian.toLocaleString()}</td></tr>`;
             opt += `<option value="${x.id}">${x.nama}</option>`;
         });
-        document.getElementById('view-karyawan').innerHTML = hK + "</table>";
+        document.getElementById('list-k').innerHTML = listK + "</table>";
         document.getElementById('a-kar').innerHTML = opt;
-        document.getElementById('g-kar').innerHTML = opt;
+        document.getElementById('s-kar').innerHTML = opt;
 
-        let hA = "<table><tr><th>Tgl</th><th>Nama</th><th>Stat</th></tr>";
+        let listA = "<table><tr><th>Tgl</th><th>Nama</th><th>Stat</th></tr>";
         db_a.slice(-10).reverse().forEach(x => {
             let k = db_k.find(y => y.id === x.id);
-            hA += `<tr><td>${x.tgl.slice(5)}</td><td>${k?k.nama:'??'}</td><td>${x.status}</td></tr>`;
+            listA += `<tr><td>${x.tgl}</td><td>${k?k.nama:'?'}</td><td>${x.stat}</td></tr>`;
         });
-        document.getElementById('view-absen').innerHTML = hA + "</table>";
-    }
-
-    function editK(id) {
-        let x = db_k.find(y => y.id === id);
-        document.getElementById('k-id').value = x.id;
-        document.getElementById('k-nama').value = x.nama;
-        document.getElementById('k-jabatan').value = x.jabatan;
-        document.getElementById('k-gaji').value = x.gaji;
-        document.getElementById('btn-batal-k').style.display = 'block';
-        buka('karyawan');
-    }
-
-    function batalEdit() {
-        document.getElementById('k-id').value = '';
-        document.getElementById('k-nama').value = '';
-        document.getElementById('btn-batal-k').style.display = 'none';
+        document.getElementById('list-a').innerHTML = listA + "</table>";
     }
 
     function buka(id) {
@@ -198,8 +199,6 @@
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         event.currentTarget.classList.add('active');
     }
-
-    function hapusSemua() { if(confirm("Hapus semua?")) { localStorage.clear(); location.reload(); } }
 
     render();
 </script>
