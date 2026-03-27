@@ -3,346 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HRD Master Ultimate</title>
+    <title>HRD Master Pro</title>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="HRD Pro">
-    <meta name="apple-mobile-web-app-title" content="HRD Pro">
-    <meta name="theme-color" content="#1e40af">
-    <meta name="msapplication-navbutton-color" content="#1e40af">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2563eb">
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👔</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231e40af%22/><text x=%2250%22 y=%2270%22 font-size=%2270%22 text-anchor=%22middle%22 fill=%22white%22>👔</text></svg>">
-
     <style>
-        :root { --primary: #1e40af; --dark: #0f172a; --success: #059669; --danger: #dc2626; --warn: #d97706; --bg: #f8fafc; --text: #1e293b; }
+        :root { --primary: #2563eb; --dark: #1e40af; --success: #10b981; --danger: #ef4444; --warn: #f59e0b; --bg: #f3f4f6; --text: #1f2937; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 80px; font-size: 13px; -webkit-tap-highlight-color: transparent; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 12px; border: 1px solid #e2e8f0; }
-        h3 { margin-top: 0; color: var(--dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 15px; }
-        input, select, button, textarea { width: 100%; padding: 9px; margin: 4px 0 10px 0; border-radius: 4px; border: 1px solid #cbd5e1; box-sizing: border-box; font-size: 13px; font-family:inherit; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 12px; border: 1px solid #e5e7eb; }
+        h3 { margin-top: 0; color: var(--dark); border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; font-size: 15px; }
+        input, select, button, textarea { width: 100%; padding: 10px; margin: 4px 0 10px 0; border-radius: 4px; border: 1px solid #d1d5db; box-sizing: border-box; font-size: 13px; font-family:inherit; }
         input:focus, select:focus { border-color: var(--primary); outline: none; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .btn-main { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
-        .btn-success { background: var(--success); color: white; border: none; cursor: pointer; }
-        .btn-danger { background: var(--danger); color: white; border: none; cursor: pointer; }
+        .btn-main { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; }
+        .btn-danger { background: var(--danger); color: white; border: none; cursor: pointer; padding: 12px; border-radius: 6px; }
         table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 11px; }
-        th, td { padding: 6px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: middle; }
-        th { background: #f1f5f9; font-weight: bold; }
-        .text-right { text-align: right; }
+        th, td { padding: 8px 6px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: middle; }
+        th { background: #f9fafb; font-weight: bold; color: #4b5563; }
+        .badge { padding: 3px 6px; border-radius: 4px; color: white; font-size: 10px; font-weight: bold; }
+        .bg-success { background: var(--success); } .bg-danger { background: var(--danger); } .bg-warn { background: var(--warn); } .bg-dark { background: var(--dark); }
         .page { display: none; } .page.active { display: block; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 8px 2px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); border-top: 1px solid #e2e8f0; z-index:100; }
-        .nav-item { border: none; background: none; font-size: 10px; color: #64748b; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; padding: 4px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 8px 2px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); border-top: 1px solid #e5e7eb; z-index:100; }
+        .nav-item { border: none; background: none; font-size: 10px; color: #6b7280; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 25%; padding: 4px; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
-        .nav-item i { font-size: 18px; margin-bottom: 2px; font-style: normal; }
-        label { font-weight: 600; font-size: 11px; color: #475569; }
-        
-        .btn-float { position: fixed; top: 12px; right: 12px; background: white; color: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.15); font-size: 18px; z-index: 99; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-        /* Print Styles */
-        @media print {
-            body { background: white; padding: 0; font-size: 12pt; }
-            .card { border: none; box-shadow: none; padding: 0; }
-            .no-print, .bottom-nav, .btn-float { display: none !important; }
-            .slip-gaji { display: block !important; font-family: 'Courier New', Courier, monospace; width: 100%; max-width: 800px; margin: 0 auto; }
-            table { font-size: 10pt; }
-            table, th, td { border-color: #000; }
-            th { background: #eee !important; -webkit-print-color-adjust: exact; }
-        }
+        .nav-item i { font-size: 20px; margin-bottom: 3px; font-style: normal; }
+        label { font-weight: 600; font-size: 11px; color: #4b5563; }
     </style>
 </head>
 <body>
 
-<button class="btn-float no-print" onclick="bukaTab('seting')">⚙️</button>
-
 <div id="p-home" class="page active">
-    <div class="card no-print" style="background:var(--primary); color:white; padding-right:50px;">
-        <h2 style="margin:0; font-size:18px;" id="dash-pt">NAMA PERUSAHAAN</h2>
-        <p style="margin:5px 0 0 0; font-size:12px;">Dashboard HRD | <span id="dash-tgl"></span></p>
+    <div class="card" style="background:var(--primary); color:white;">
+        <h2 style="margin:0; font-size:18px;" id="dash-pt">PERUSAHAAN UTAMA</h2>
+        <p style="margin:5px 0 0 0; font-size:12px;">Data Hari Ini: <span id="dash-tgl"></span></p>
     </div>
-    <div class="grid-2 no-print">
-        <div class="card" style="text-align:center;"><h3>Total Pegawai</h3><h1 style="margin:0;" id="v-tot-pegawai">0</h1></div>
+    <div class="grid-2">
+        <div class="card" style="text-align:center;"><h3>Total Karyawan</h3><h1 style="margin:0; color:var(--dark);" id="v-tot-kar">0</h1></div>
         <div class="card" style="text-align:center;"><h3>Hadir Hari Ini</h3><h1 style="margin:0; color:var(--success);" id="v-tot-hadir">0</h1></div>
     </div>
-    <div class="card no-print">
-        <h3>Log Absensi Hari Ini</h3>
-        <div style="overflow-x:auto;"><div id="view-absen-dash"></div></div>
+    <div class="card">
+        <h3>Absen Bermasalah Hari Ini ⚠️</h3>
+        <p style="font-size:11px; color:#6b7280; margin-top:-5px;">(Sakit / Izin / Alpa)</p>
+        <div id="view-alert" style="overflow-x:auto;"></div>
     </div>
 </div>
 
-<div id="p-pegawai" class="page">
-    <div class="card no-print">
-        <h3>Input / Edit Karyawan</h3>
+<div id="p-karyawan" class="page">
+    <div class="card">
+        <h3>Tambah / Edit Karyawan</h3>
         <div class="grid-2">
-            <div><label>NIK / ID</label><input type="text" id="k-nik"></div>
-            <div><label>Nama Lengkap</label><input type="text" id="k-nama"></div>
-            <div><label>Departemen</label><input type="text" id="k-dept"></div>
-            <div><label>Jabatan</label><input type="text" id="k-jab"></div>
-        </div>
-        <div class="grid-3">
-            <div><label>Status</label><select id="k-stat"><option>Tetap</option><option>Kontrak</option></select></div>
-            <div><label>Bank</label><input type="text" id="k-bank" placeholder="BCA/Mandiri"></div>
-            <div><label>No. Rekening</label><input type="number" id="k-rek"></div>
-        </div>
-        <div class="grid-2">
-            <div><label>No. BPJS Kesehatan</label><input type="number" id="k-bpjs-kes"></div>
-            <div><label>No. BPJS Ketenagakerjaan</label><input type="number" id="k-bpjs-tk"></div>
-            <div><label>Gaji Pokok (Rp)</label><input type="number" id="k-gapok" value="0"></div>
-            <div><label>Tunj. Tetap (Rp)</label><input type="number" id="k-tunj" value="0"></div>
+            <div><label>ID / NIK Karyawan</label><input type="text" id="k-id" placeholder="Contoh: NIK-001"></div>
+            <div><label>Nama Lengkap</label><input type="text" id="k-nama" placeholder="Contoh: Budi Santoso"></div>
+            <div><label>Jabatan / Posisi</label><input type="text" id="k-jabatan" placeholder="Contoh: Staff Gudang"></div>
+            <div><label>No. HP / WhatsApp</label><input type="number" id="k-hp" placeholder="08123..."></div>
         </div>
         <button class="btn-main" onclick="simpanKaryawan()">💾 Simpan Data Karyawan</button>
-        <button class="btn-danger" style="margin-top:5px; display:none;" id="btn-batal-edit" onclick="batalEditKaryawan()">❌ Batal Edit / Bersihkan Form</button>
+        <button class="btn-danger" style="margin-top:5px; display:none;" id="btn-batal-k" onclick="batalEditKaryawan()">❌ Batal Edit</button>
     </div>
     <div class="card">
         <h3>Daftar Karyawan</h3>
-        <div id="view-pegawai" style="overflow-x:auto;"></div>
+        <input type="text" id="cari-karyawan" placeholder="🔍 Cari nama atau ID..." onkeyup="refreshUI()" style="margin-bottom:10px;">
+        <div id="view-karyawan" style="overflow-x:auto;"></div>
     </div>
 </div>
 
 <div id="p-absen" class="page">
-    <div class="card no-print">
-        <h3>Absensi & Lembur Harian</h3>
+    <div class="card">
+        <h3>Input Absensi Harian</h3>
         <div class="grid-2">
-            <div><label>Tanggal</label><input type="date" id="a-tgl"></div>
-            <div><label>Karyawan</label><select id="a-peg"></select></div>
-            <div><label>Status</label>
-                <select id="a-stat">
-                    <option value="Hadir">Hadir</option>
-                    <option value="Sakit">Sakit</option>
-                    <option value="Izin">Izin</option>
-                    <option value="Alpa">Alpa</option>
-                    <option value="Cuti">Cuti</option>
+            <div><label>Tanggal Absen</label><input type="date" id="a-tgl"></div>
+            <div><label>Status Kehadiran</label>
+                <select id="a-status" style="font-weight:bold;">
+                    <option value="HADIR">✅ HADIR</option>
+                    <option value="SAKIT">🤒 SAKIT</option>
+                    <option value="IZIN">📝 IZIN</option>
+                    <option value="ALPA">❌ ALPA (Tanpa Keterangan)</option>
                 </select>
             </div>
-            <div><label>Jam Lembur</label><input type="number" id="a-lembur" value="0"></div>
-            <div><label>Jam Masuk</label><input type="time" id="a-masuk" value="08:00"></div>
-            <div><label>Jam Keluar</label><input type="time" id="a-keluar" value="17:00"></div>
         </div>
-        <button class="btn-main" onclick="simpanAbsen()">⏱️ Catat Absensi</button>
-    </div>
-    <div class="card"><div id="view-absen" style="overflow-x:auto;"></div></div>
-</div>
-
-<div id="p-gaji" class="page">
-    <div class="card no-print">
-        <h3>Kalkulator Payroll</h3>
-        <div class="grid-2">
-            <div><label>Periode</label><input type="month" id="g-per"></div>
-            <div><label>Karyawan</label><select id="g-peg" onchange="tarikDataGaji()"></select></div>
-        </div>
-        <div style="background:#f8fafc; padding:10px; border:1px solid #e2e8f0; border-radius:4px; margin-bottom:10px;">
-            <h4 style="margin-top:0; color:var(--success);">Pendapatan</h4>
-            <div class="grid-3">
-                <div><label>Gaji Pokok</label><input type="number" id="g-gapok" readonly style="background:#e2e8f0;"></div>
-                <div><label>Tunj. Tetap</label><input type="number" id="g-tunj" readonly style="background:#e2e8f0;"></div>
-                <div><label>Lembur</label><input type="number" id="g-lembur" value="0" oninput="hitungNet()"></div>
-            </div>
-            <div><label>Bonus</label><input type="number" id="g-bonus" value="0" oninput="hitungNet()"></div>
-        </div>
-        <div style="background:#fef2f2; padding:10px; border:1px solid #fecaca; border-radius:4px; margin-bottom:10px;">
-            <h4 style="margin-top:0; color:var(--danger);">Potongan</h4>
-            <div class="grid-3">
-                <div><label>BPJS Kes</label><input type="number" id="g-pot-kes" value="0" oninput="hitungNet()"></div>
-                <div><label>BPJS TK</label><input type="number" id="g-pot-tk" value="0" oninput="hitungNet()"></div>
-                <div><label>Telat/Alpa</label><input type="number" id="g-pot-absen" value="0" oninput="hitungNet()"></div>
-            </div>
-            <div><label>Kasbon</label><input type="number" id="g-kasbon" value="0" oninput="hitungNet()"></div>
-        </div>
-        <label>Total Take Home Pay:</label>
-        <input type="text" id="g-net" readonly style="background:#dcfce7; font-weight:bold; color:#065f46; font-size:18px;">
-        <button class="btn-success" style="width:100%; padding:12px; font-weight:bold; font-size:14px;" onclick="simpanPayroll()">💰 Proses Penggajian</button>
+        <label>Pilih Karyawan</label>
+        <select id="a-karyawan"></select>
+        <label>Keterangan (Opsional)</label>
+        <input type="text" id="a-ket" placeholder="Contoh: Sakit demam, Izin urusan keluarga...">
+        
+        <button class="btn-main" onclick="simpanAbsen()">⚡ Simpan Absen</button>
     </div>
     <div class="card">
-        <h3>Riwayat Gaji & Slip</h3>
-        <div id="view-gaji" style="overflow-x:auto;"></div>
+        <h3>Riwayat Absensi Terakhir</h3>
+        <div id="view-absen" style="overflow-x:auto;"></div>
     </div>
-</div>
-
-<div id="p-lapor" class="page">
-    <div class="card no-print">
-        <h3>Export Laporan Bank & HRD</h3>
-        <select id="lap-jenis">
-            <option value="bank">Daftar Transfer Bank (Excel)</option>
-            <option value="absen">Rekap Absen & Lembur (Excel)</option>
-        </select>
-        <button class="btn-main" onclick="exportLaporan()">📊 Download Excel</button>
-    </div>
-    <div id="area-slip" style="display:none;" class="slip-gaji"></div>
 </div>
 
 <div id="p-seting" class="page">
-    <div class="card no-print">
-        <h3>Pengaturan Profil Perusahaan</h3>
+    <div class="card">
+        <h3>Pengaturan HRD</h3>
         <label>Nama Perusahaan / Toko:</label>
-        <input type="text" id="set-pt" oninput="simpanSet()" placeholder="Contoh: PT. Makmur Jaya">
-        <label>Nama Manajer HRD / Pimpinan:</label>
-        <input type="text" id="set-bos" oninput="simpanSet()" placeholder="Contoh: Bpk. HRD">
-        <hr style="margin:20px 0; border:1px solid #e2e8f0;">
-        <button class="btn-danger" style="padding:12px;" onclick="if(confirm('YAKIN HAPUS SEMUA DATA KARYAWAN & GAJI?')) { localStorage.clear(); location.reload(); }">⚠️ RESET DATABASE HRD</button>
+        <input type="text" id="set-pt" oninput="simpanSet()" placeholder="Contoh: PT. Maju Bersama">
+        
+        <hr style="margin:20px 0; border:1px solid #e5e7eb;">
+        
+        <h3>Export Data (Excel/CSV)</h3>
+        <button class="btn-main" style="margin-bottom:10px; background:var(--dark);" onclick="exportData('karyawan')">📊 Download Data Karyawan</button>
+        <button class="btn-main" style="background:var(--success);" onclick="exportData('absen')">📊 Download Laporan Absensi</button>
+        
+        <hr style="margin:20px 0; border:1px solid #e5e7eb;">
+        <button class="btn-danger" onclick="resetData()">⚠️ RESET SEMUA DATA HRD</button>
     </div>
 </div>
 
 <div class="bottom-nav">
     <button class="nav-item active" onclick="bukaTab('home')"><i>📊</i>Dash</button>
-    <button class="nav-item" onclick="bukaTab('pegawai')"><i>👥</i>Pegawai</button>
-    <button class="nav-item" onclick="bukaTab('absen')"><i>⏱️</i>Absen</button>
-    <button class="nav-item" onclick="bukaTab('gaji')"><i>💰</i>Payroll</button>
-    <button class="nav-item" onclick="bukaTab('lapor')"><i>🖨️</i>Cetak</button>
+    <button class="nav-item" onclick="bukaTab('karyawan')"><i>👥</i>Karyawan</button>
+    <button class="nav-item" onclick="bukaTab('absen')"><i>📝</i>Absen</button>
+    <button class="nav-item" onclick="bukaTab('seting')"><i>⚙️</i>Seting</button>
 </div>
 
 <script>
-    const fRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0);
+    // FUNGSI DASAR
     const getVal = (id) => document.getElementById(id).value;
-    const getNum = (id) => parseInt(document.getElementById(id).value) || 0;
     const setVal = (id, val) => document.getElementById(id).value = val;
     
-    let db_peg = JSON.parse(localStorage.getItem('hr_peg')) || [];
-    let db_abs = JSON.parse(localStorage.getItem('hr_abs')) || [];
-    let db_pay = JSON.parse(localStorage.getItem('hr_pay')) || [];
-
-    let now = new Date();
+    // DATABASE LOCAL
+    let db_kar = JSON.parse(localStorage.getItem('hr_kar')) || []; 
+    let db_absen = JSON.parse(localStorage.getItem('hr_absen')) || [];
+    
+    // --- FITUR KUNCI TANGGAL SAMPAI KE AKAR-AKARNYA ---
+    let now = new Date(); 
     let localIso = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
     let today = localIso.slice(0,10);
-    let curMonth = localIso.slice(0,7);
     
     document.getElementById('dash-tgl').innerText = now.toLocaleDateString('id-ID', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-    setVal('a-tgl', today); setVal('g-per', curMonth);
+    
+    // Set tanggal default ke hari ini
+    setVal('a-tgl', today);
+    // KUNCI MAKSIMAL TANGGAL ADALAH HARI INI (Nggak bisa milih besok)
+    document.getElementById('a-tgl').setAttribute('max', today);
+    // --------------------------------------------------
 
-    function simpanSet() {
-        localStorage.setItem('hr_pt', getVal('set-pt'));
-        localStorage.setItem('hr_boss', getVal('set-bos'));
-        refreshUI();
+    // SETING HRD
+    function simpanSet() { localStorage.setItem('hr_pt', getVal('set-pt')); refreshUI(); }
+
+    // FUNGSI KARYAWAN
+    function simpanKaryawan() { 
+        let id = getVal('k-id').toUpperCase(); let nama = getVal('k-nama'); 
+        if(!id || !nama) return alert("ID dan Nama Karyawan wajib diisi!"); 
+        
+        let obj = { id: id, nama: nama, jabatan: getVal('k-jabatan'), hp: getVal('k-hp') }; 
+        
+        let idx = db_kar.findIndex(x => x.id === id); 
+        if(idx > -1) { 
+            if(confirm("ID sudah ada! Yakin update data karyawan ini?")) { db_kar[idx] = obj; } else return; 
+        } else { db_kar.push(obj); } 
+        
+        localStorage.setItem('hr_kar', JSON.stringify(db_kar)); 
+        alert("Data Karyawan Tersimpan!"); batalEditKaryawan(); refreshUI(); 
+    }
+    
+    function editKaryawan(id) { 
+        let k = db_kar.find(x => x.id === id); if(!k) return; 
+        setVal('k-id', k.id); document.getElementById('k-id').readOnly = true; document.getElementById('k-id').style.background = "#e5e7eb"; 
+        setVal('k-nama', k.nama); setVal('k-jabatan', k.jabatan); setVal('k-hp', k.hp);
+        document.getElementById('btn-batal-k').style.display = "block"; window.scrollTo(0, 0); 
+    }
+    
+    function batalEditKaryawan() { 
+        document.getElementById('k-id').readOnly = false; document.getElementById('k-id').style.background = "#fff"; 
+        ['k-id','k-nama','k-jabatan','k-hp'].forEach(id => setVal(id, '')); 
+        document.getElementById('btn-batal-k').style.display = "none"; 
+    }
+    
+    function hapusKaryawan(id) { 
+        if(confirm("⚠️ YAKIN HAPUS KARYAWAN INI?")) { 
+            db_kar = db_kar.filter(x => x.id !== id); 
+            localStorage.setItem('hr_kar', JSON.stringify(db_kar)); refreshUI(); 
+        } 
     }
 
-    function simpanKaryawan() {
-        let nik = getVal('k-nik'); let nama = getVal('k-nama');
-        if(!nik || !nama) return alert("NIK dan Nama wajib diisi!");
-        let obj = {
-            id: Date.now(), nik: nik, nama: nama, dept: getVal('k-dept'), jab: getVal('k-jab'), stat: getVal('k-stat'),
-            bank: getVal('k-bank'), rek: getVal('k-rek'), bpjs_kes: getVal('k-bpjs-kes'), bpjs_tk: getVal('k-bpjs-tk'),
-            gapok: getNum('k-gapok'), tunj: getNum('k-tunj')
-        };
-        let idx = db_peg.findIndex(x => x.nik === nik);
-        if(idx > -1) { if(confirm("Yakin ingin mengupdate data karyawan NIK " + nik + "?")) db_peg[idx] = obj; else return; } 
-        else { db_peg.push(obj); }
-        localStorage.setItem('hr_peg', JSON.stringify(db_peg)); alert("Data Karyawan Tersimpan!"); batalEditKaryawan(); refreshUI();
-    }
-
-    function editKaryawan(nik) {
-        let peg = db_peg.find(x => x.nik === nik); if(!peg) return;
-        setVal('k-nik', peg.nik); document.getElementById('k-nik').readOnly = true; document.getElementById('k-nik').style.background = "#e2e8f0";
-        setVal('k-nama', peg.nama); setVal('k-dept', peg.dept); setVal('k-jab', peg.jab); setVal('k-stat', peg.stat);
-        setVal('k-bank', peg.bank); setVal('k-rek', peg.rek); setVal('k-bpjs-kes', peg.bpjs_kes); setVal('k-bpjs-tk', peg.bpjs_tk);
-        setVal('k-gapok', peg.gapok); setVal('k-tunj', peg.tunj);
-        document.getElementById('btn-batal-edit').style.display = "block"; window.scrollTo(0, 0);
-    }
-
-    function batalEditKaryawan() {
-        document.getElementById('k-nik').readOnly = false; document.getElementById('k-nik').style.background = "#fff";
-        ['k-nik','k-nama','k-dept','k-jab','k-bank','k-rek','k-bpjs-kes','k-bpjs-tk'].forEach(id => setVal(id, ''));
-        setVal('k-gapok', 0); setVal('k-tunj', 0); setVal('k-stat', 'Tetap'); document.getElementById('btn-batal-edit').style.display = "none";
-    }
-
-    function hapusKaryawan(id) {
-        if(confirm("⚠️ YAKIN INGIN MENGHAPUS KARYAWAN INI?\nData absen dan gaji terkait mungkin akan kehilangan referensi nama!")) {
-            db_peg = db_peg.filter(x => x.id !== id); localStorage.setItem('hr_peg', JSON.stringify(db_peg)); refreshUI();
-        }
-    }
-
+    // FUNGSI ABSEN
     function simpanAbsen() {
-        let id_peg = getVal('a-peg'); let tgl = getVal('a-tgl'); if(!id_peg) return alert("Pilih Karyawan!");
-        let obj = { id: Date.now(), id_peg: id_peg, tgl: tgl, stat: getVal('a-stat'), lembur: getNum('a-lembur'), msk: getVal('a-masuk'), klr: getVal('a-keluar') };
-        let idx = db_abs.findIndex(x => x.id_peg == id_peg && x.tgl === tgl);
-        if(idx > -1) { if(confirm("Absen hari ini sudah ada. Timpa?")) db_abs[idx] = obj; else return; } else { db_abs.push(obj); }
-        localStorage.setItem('hr_abs', JSON.stringify(db_abs)); alert("Absen Tersimpan!"); refreshUI();
-    }
+        let tgl = getVal('a-tgl'); let status = getVal('a-status'); let id_kar = getVal('a-karyawan'); 
+        let ket = getVal('a-ket');
+        
+        if(!id_kar) return alert("Pilih karyawan dulu Bos!");
 
-    function tarikDataGaji() {
-        let id_peg = getVal('g-peg'); let per = getVal('g-per'); let peg = db_peg.find(x => x.id == id_peg); if(!peg) return;
-        setVal('g-gapok', peg.gapok); setVal('g-tunj', peg.tunj);
-        let rateLembur = 20000;
-        let jamLembur = db_abs.filter(x => x.id_peg == id_peg && x.tgl.startsWith(per)).reduce((sum, curr) => sum + parseInt(curr.lembur), 0);
-        setVal('g-lembur', jamLembur * rateLembur);
-        setVal('g-pot-tk', peg.bpjs_tk ? Math.round(peg.gapok * 0.02) : 0); setVal('g-pot-kes', peg.bpjs_kes ? Math.round(peg.gapok * 0.01) : 0);
-        let jmlAlpa = db_abs.filter(x => x.id_peg == id_peg && x.tgl.startsWith(per) && x.stat === 'Alpa').length;
-        setVal('g-pot-absen', jmlAlpa * 100000); hitungNet();
-    }
-
-    function hitungNet() {
-        let pen = getNum('g-gapok') + getNum('g-tunj') + getNum('g-lembur') + getNum('g-bonus');
-        let pot = getNum('g-pot-kes') + getNum('g-pot-tk') + getNum('g-pot-absen') + getNum('g-kasbon');
-        setVal('g-net', fRp(pen - pot)); return pen - pot;
-    }
-
-    function simpanPayroll() {
-        let id_peg = getVal('g-peg'); let per = getVal('g-per'); if(!id_peg) return alert("Pilih Karyawan!");
-        let obj = { id: Date.now(), id_peg: id_peg, per: per, tgl_cetak: today, pendapatan: { gapok: getNum('g-gapok'), tunj: getNum('g-tunj'), lembur: getNum('g-lembur'), bonus: getNum('g-bonus') }, potongan: { kes: getNum('g-pot-kes'), tk: getNum('g-pot-tk'), absen: getNum('g-pot-absen'), kasbon: getNum('g-kasbon') }, net: hitungNet() };
-        let idx = db_pay.findIndex(x => x.id_peg == id_peg && x.per === per);
-        if(idx > -1) { if(confirm("Gaji bulan ini sudah diproses. Timpa?")) db_pay[idx] = obj; else return; } else { db_pay.push(obj); }
-        localStorage.setItem('hr_pay', JSON.stringify(db_pay)); alert("Payroll Tersimpan!"); refreshUI();
-    }
-
-    function cetakSlip(id_pay) {
-        let pay = db_pay.find(x => x.id == id_pay); let peg = db_peg.find(x => x.id == pay.id_peg);
-        let pt = localStorage.getItem('hr_pt') || 'NAMA PERUSAHAAN / TOKO'; let bos = localStorage.getItem('hr_boss') || 'HRD Manager';
-        let totalPen = pay.pendapatan.gapok + pay.pendapatan.tunj + pay.pendapatan.lembur + pay.pendapatan.bonus;
-        let totalPot = pay.potongan.kes + pay.potongan.tk + pay.potongan.absen + pay.potongan.kasbon;
-        let html = `
-        <div style="border:1px solid #000; padding:20px;">
-            <div style="text-align:center; border-bottom:2px solid #000; margin-bottom:15px; padding-bottom:10px;">
-                <h2 style="margin:0;">${pt.toUpperCase()}</h2><p style="margin:0;">SLIP GAJI KARYAWAN | Periode: ${pay.per}</p>
-            </div>
-            <table style="width:100%; margin-bottom:15px; border:none; font-size:12px;"><tr><td style="width:100px; border:none;">NIK / Nama</td><td style="border:none;">: <b>${peg.nik} - ${peg.nama}</b></td><td style="width:100px; border:none;">Dept / Jabatan</td><td style="border:none;">: ${peg.dept} / ${peg.jab}</td></tr><tr><td style="border:none;">Pembayaran via</td><td style="border:none;">: Bank ${peg.bank} (${peg.rek})</td><td style="border:none;">Status</td><td style="border:none;">: ${peg.stat}</td></tr></table>
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <div style="width:48%; border:1px solid #000; padding:10px;"><h4 style="margin-top:0; border-bottom:1px solid #000;">PENDAPATAN</h4><table style="border:none;"><tr><td style="border:none;">Gaji Pokok</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.gapok)}</td></tr><tr><td style="border:none;">Tunj. Tetap</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.tunj)}</td></tr><tr><td style="border:none;">Uang Lembur</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.lembur)}</td></tr><tr><td style="border:none;">Bonus/Lainnya</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.bonus)}</td></tr><tr><td style="border:none; font-weight:bold;">Total Pendapatan</td><td style="border:none; font-weight:bold;" class="text-right">${fRp(totalPen)}</td></tr></table></div>
-                <div style="width:48%; border:1px solid #000; padding:10px;"><h4 style="margin-top:0; border-bottom:1px solid #000;">POTONGAN</h4><table style="border:none;"><tr><td style="border:none;">BPJS Kes/TK</td><td style="border:none;" class="text-right">${fRp(pay.potongan.kes + pay.potongan.tk)}</td></tr><tr><td style="border:none;">Pot. Telat/Alpa</td><td style="border:none;" class="text-right">${fRp(pay.potongan.absen)}</td></tr><tr><td style="border:none;">Kasbon/Lainnya</td><td style="border:none;" class="text-right">${fRp(pay.potongan.kasbon)}</td></tr><tr><td style="border:none;"></td><td style="border:none;"></td></tr><tr><td style="border:none; font-weight:bold;">Total Potongan</td><td style="border:none; font-weight:bold;" class="text-right">${fRp(totalPot)}</td></tr></table></div>
-            </div>
-            <div style="border:2px solid #000; padding:10px; background:#f8fafc; text-align:center;"><h3 style="margin:0;">TAKE HOME PAY : ${fRp(pay.net)}</h3></div>
-            <table style="width:100%; border:none; margin-top:30px; text-align:center;"><tr><td style="border:none; width:50%;">Penerima,</td><td style="border:none; width:50%;">HRD & Finance,</td></tr><tr><td style="border:none; height:70px;"></td><td style="border:none;"></td></tr><tr><td style="border:none;">( ${peg.nama} )</td><td style="border:none; font-weight:bold; text-decoration:underline;">( ${bos} )</td></tr></table>
-        </div>`;
-        bukaTab('lapor'); document.querySelector('.card.no-print').style.display = 'none'; let area = document.getElementById('area-slip'); area.innerHTML = html; area.style.display = 'block';
-        setTimeout(() => { window.print(); document.querySelector('.card.no-print').style.display = 'block'; area.style.display = 'none'; }, 500);
-    }
-
-    function exportLaporan() {
-        let jenis = getVal('lap-jenis'); let csv = ""; let fn = "";
-        if(jenis === 'bank') {
-            csv = "NIK,Nama,Bank,No Rekening,Nominal Transfer (THP),Periode\n";
-            db_pay.forEach(x => { let p = db_peg.find(y => y.id == x.id_peg); if(p) csv += `="${p.nik}","${p.nama}","${p.bank}","${p.rek}",${x.net},"${x.per}"\n`; });
-            fn = "Daftar_Transfer_Gaji.csv";
-        } else {
-            csv = "Tanggal,NIK,Nama,Status,Jam Masuk,Jam Keluar,Lembur(Jam)\n";
-            db_abs.forEach(x => { let p = db_peg.find(y => y.id == x.id_peg); if(p) csv += `${x.tgl},="${p.nik}","${p.nama}","${x.stat}","${x.msk}","${x.klr}",${x.lembur}\n`; });
-            fn = "Rekap_Absensi_Lembur.csv";
+        // Cek apakah hari ini orang tersebut sudah diabsen (biar nggak dobel)
+        let cekDobel = db_absen.findIndex(x => x.tgl === tgl && x.id_kar === id_kar);
+        if(cekDobel > -1) {
+            if(!confirm(`Karyawan ini sudah diabsen pada tanggal ${tgl} dengan status ${db_absen[cekDobel].status}. Mau ditimpa/diupdate?`)) return;
+            // Kalau di OK, kita hapus absen yang lama, ganti yang baru
+            db_absen.splice(cekDobel, 1);
         }
-        let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = fn; a.click();
+
+        let objAbsen = { id_absen: Date.now(), tgl: tgl, status: status, id_kar: id_kar, ket: ket };
+        db_absen.push(objAbsen);
+        localStorage.setItem('hr_absen', JSON.stringify(db_absen));
+        
+        alert(`Berhasil simpan absen ${status}!`);
+        setVal('a-ket', ''); refreshUI();
     }
 
-    function refreshUI() {
-        let pt = localStorage.getItem('hr_pt') || 'NAMA PERUSAHAAN'; let bos = localStorage.getItem('hr_boss') || '';
-        document.getElementById('dash-pt').innerText = pt.toUpperCase(); setVal('set-pt', pt === 'NAMA PERUSAHAAN' ? '' : pt); setVal('set-bos', bos);
+    // FUNGSI REFRESH TAMPILAN
+    function refreshUI() { 
+        let pt = localStorage.getItem('hr_pt') || 'PERUSAHAAN UTAMA'; 
+        document.getElementById('dash-pt').innerText = pt.toUpperCase(); 
+        setVal('set-pt', pt === 'PERUSAHAAN UTAMA' ? '' : pt); 
+        
+        // Update Dashboard
+        document.getElementById('v-tot-kar').innerText = db_kar.length;
+        
+        // Hitung Hadir & Bermasalah hari ini
+        let absenHariIni = db_absen.filter(x => x.tgl === today);
+        let hadir = absenHariIni.filter(x => x.status === 'HADIR').length;
+        document.getElementById('v-tot-hadir').innerText = hadir;
 
-        let optPeg = "<option value=''>-- Pilih Karyawan --</option>"; db_peg.forEach(x => optPeg += `<option value="${x.id}">${x.nik} - ${x.nama}</option>`);
-        document.getElementById('a-peg').innerHTML = optPeg; document.getElementById('g-peg').innerHTML = optPeg;
-        document.getElementById('v-tot-pegawai').innerText = db_peg.length; document.getElementById('v-tot-hadir').innerText = db_abs.filter(x => x.tgl === today && x.stat === 'Hadir').length;
+        let bermasalah = absenHariIni.filter(x => x.status !== 'HADIR');
+        let h_alert = "<table><tr><th>Nama</th><th>Status</th><th>Ket</th></tr>";
+        if(bermasalah.length === 0) h_alert += "<tr><td colspan='3' style='text-align:center;'>✅ Tidak ada absen bermasalah hari ini.</td></tr>";
+        bermasalah.forEach(x => {
+            let k = db_kar.find(y => y.id === x.id_kar);
+            let namaKar = k ? k.nama : 'Dihapus';
+            let wrn = x.status === 'SAKIT' ? 'bg-warn' : (x.status === 'ALPA' ? 'bg-danger' : 'bg-dark');
+            h_alert += `<tr><td><b>${namaKar}</b></td><td><span class='badge ${wrn}'>${x.status}</span></td><td>${x.ket || '-'}</td></tr>`;
+        });
+        document.getElementById('view-alert').innerHTML = h_alert + "</table>";
 
-        let h_abs = "<table><tr><th>Nama</th><th>Status</th><th>Masuk</th><th>Lembur</th></tr>";
-        db_abs.filter(x => x.tgl === today).forEach(x => { let p = db_peg.find(y => y.id == x.id_peg); h_abs += `<tr><td>${p?p.nama:'-'}</td><td>${x.stat}</td><td>${x.msk}</td><td>${x.lembur} Jam</td></tr>`; });
-        document.getElementById('view-absen-dash').innerHTML = h_abs + "</table>";
+        // Update Dropdown Karyawan
+        let optKar = "<option value=''>-- Pilih Karyawan --</option>"; 
+        db_kar.forEach(x => optKar += `<option value="${x.id}">${x.id} - ${x.nama}</option>`); 
+        document.getElementById('a-karyawan').innerHTML = optKar;
 
-        let h_peg = "<table><tr><th>NIK/Nama</th><th>Dept / Gapok</th><th>Aksi</th></tr>";
-        db_peg.forEach(x => { h_peg += `<tr><td><b>${x.nik}</b><br>${x.nama}</td><td>${x.dept}<br><span style="color:green">${fRp(x.gapok)}</span></td><td><button class='btn-main' style='padding:4px 8px; font-size:12px; margin-bottom:4px;' onclick='editKaryawan("${x.nik}")'>✏️</button><button class='btn-danger' style='padding:4px 8px; font-size:12px;' onclick='hapusKaryawan(${x.id})'>🗑️</button></td></tr>`; });
-        document.getElementById('view-pegawai').innerHTML = h_peg + "</table>";
+        // Update Tabel Karyawan
+        let cari = getVal('cari-karyawan').toLowerCase();
+        let h_kar = "<table><tr><th>Data Karyawan</th><th>Kontak</th><th>Aksi</th></tr>"; 
+        db_kar.filter(x => x.nama.toLowerCase().includes(cari) || x.id.toLowerCase().includes(cari)).forEach(x => { 
+            h_kar += `<tr>
+                <td><b>${x.id}</b><br>${x.nama}<br><span style="color:#6b7280; font-size:9px;">${x.jabatan}</span></td>
+                <td>${x.hp}</td>
+                <td>
+                    <button class='btn-main' style='padding:4px 8px; font-size:12px; margin-bottom:4px;' onclick='editKaryawan("${x.id}")'>✏️</button>
+                    <button class='btn-danger' style='padding:4px 8px; font-size:12px;' onclick='hapusKaryawan("${x.id}")'>🗑️</button>
+                </td>
+            </tr>`; 
+        }); 
+        document.getElementById('view-karyawan').innerHTML = h_kar + "</table>"; 
 
-        let h_gaji = "<table><tr><th>Bulan</th><th>Karyawan</th><th>THP</th><th>Aksi</th></tr>";
-        db_pay.sort((a,b)=>b.id-a.id).forEach(x => { let p = db_peg.find(y => y.id == x.id_peg); h_gaji += `<tr><td>${x.per}</td><td>${p?p.nama:'-'}</td><td style='color:green; font-weight:bold;'>${fRp(x.net)}</td><td><button class='btn-main' style='padding:5px; font-size:10px;' onclick='cetakSlip(${x.id})'>Cetak</button></td></tr>`; });
-        document.getElementById('view-gaji').innerHTML = h_gaji + "</table>";
+        // Update Tabel Riwayat Absen
+        let h_absen = "<table><tr><th>Tgl</th><th>Karyawan</th><th>Status</th></tr>"; 
+        db_absen.sort((a,b)=>b.id_absen-a.id_absen).slice(0, 50).forEach(x => { 
+            let k = db_kar.find(y => y.id === x.id_kar); 
+            let namaKar = k ? k.nama : 'Dihapus';
+            
+            let bgBadge = 'bg-success';
+            if(x.status === 'SAKIT') bgBadge = 'bg-warn';
+            if(x.status === 'IZIN') bgBadge = 'bg-dark';
+            if(x.status === 'ALPA') bgBadge = 'bg-danger';
+
+            h_absen += `<tr>
+                <td>${x.tgl.slice(5,10)}</td>
+                <td><b>${namaKar}</b><br><span style="font-size:9px; color:#6b7280;">${x.ket}</span></td>
+                <td style='text-align:center;'><span class='badge ${bgBadge}'>${x.status}</span></td>
+            </tr>`; 
+        }); 
+        document.getElementById('view-absen').innerHTML = h_absen + "</table><p style='font-size:10px; text-align:center; color:#6b7280;'>Menampilkan 50 absen terakhir</p>"; 
     }
 
-    function bukaTab(id) { document.querySelectorAll('.page, .nav-item').forEach(e => e.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.bottom-nav .nav-item').forEach(n => { if(n.getAttribute('onclick').includes(id)) n.classList.add('active'); }); }
+    // EXPORT & RESET
+    function exportData(jenis) { 
+        let csv = ""; let fn = ""; 
+        if(jenis === 'karyawan') { 
+            csv = "ID Karyawan,Nama Lengkap,Jabatan,No HP\n"; 
+            db_kar.forEach(x => { csv += `="${x.id}","${x.nama}","${x.jabatan}","${x.hp}"\n`; }); 
+            fn = "Data_Karyawan.csv"; 
+        } else { 
+            csv = "Tanggal,ID Karyawan,Nama Karyawan,Status,Keterangan\n"; 
+            db_absen.forEach(x => { 
+                let k = db_kar.find(y => y.id === x.id_kar); 
+                let namaKar = k ? k.nama : '-';
+                csv += `${x.tgl},="${x.id_kar}","${namaKar}","${x.status}","${x.ket}"\n`; 
+            }); 
+            fn = "Laporan_Absensi.csv"; 
+        } 
+        let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); 
+        let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = fn; a.click(); 
+    }
+
+    function resetData() {
+        if(confirm('⚠️ YAKIN HAPUS SEMUA DATA HRD & ABSENSI? Data tidak bisa dikembalikan!')) { 
+            localStorage.removeItem('hr_kar'); localStorage.removeItem('hr_absen'); location.reload(); 
+        }
+    }
+
+    function bukaTab(id) { 
+        document.querySelectorAll('.page, .nav-item').forEach(e => e.classList.remove('active')); 
+        document.getElementById('p-'+id).classList.add('active'); 
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(n => { if(n.getAttribute('onclick').includes(id)) n.classList.add('active'); }); 
+    }
+    
+    // Jalankan saat pertama buka
     refreshUI();
 </script>
 </body>
