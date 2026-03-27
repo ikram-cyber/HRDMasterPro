@@ -3,312 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HRD Master Pro Full</title>
+    <title>HRD Master Pro Fixed</title>
     <style>
         :root { --primary: #2563eb; --dark: #1e40af; --success: #10b981; --danger: #ef4444; --warn: #f59e0b; --bg: #f3f4f6; --text: #1f2937; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 80px; font-size: 13px; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 80px; font-size: 13px; }
         .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 12px; border: 1px solid #e5e7eb; }
-        h3 { margin-top: 0; color: var(--dark); border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; font-size: 15px; }
-        input, select, button { width: 100%; padding: 10px; margin: 4px 0 10px 0; border-radius: 4px; border: 1px solid #d1d5db; box-sizing: border-box; font-size: 13px; font-family:inherit; }
-        input:focus, select:focus { border-color: var(--primary); outline: none; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-main { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; }
-        .btn-danger { background: var(--danger); color: white; border: none; cursor: pointer; padding: 12px; border-radius: 6px; }
+        h3 { margin-top: 0; color: var(--dark); border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; font-size: 14px; }
+        input, select, button { width: 100%; padding: 10px; margin: 4px 0 10px 0; border-radius: 4px; border: 1px solid #d1d5db; box-sizing: border-box; font-size: 13px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-main { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .btn-danger { background: var(--danger); color: white; border: none; cursor: pointer; }
         table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 11px; }
-        th, td { padding: 8px 6px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: middle; }
-        th { background: #f9fafb; font-weight: bold; color: #4b5563; }
-        .badge { padding: 3px 6px; border-radius: 4px; color: white; font-size: 10px; font-weight: bold; }
+        th, td { padding: 8px 5px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+        th { background: #f9fafb; font-weight: bold; }
+        .badge { padding: 2px 5px; border-radius: 4px; color: white; font-size: 10px; }
         .bg-success { background: var(--success); } .bg-danger { background: var(--danger); } .bg-warn { background: var(--warn); }
         .page { display: none; } .page.active { display: block; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 8px 2px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); border-top: 1px solid #e5e7eb; z-index:100; }
-        .nav-item { border: none; background: none; font-size: 10px; color: #6b7280; display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 20%; padding: 4px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #e5e7eb; z-index:100; }
+        .nav-item { border: none; background: none; font-size: 10px; color: #6b7280; display: flex; flex-direction: column; align-items: center; width: 20%; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
-        .nav-item i { font-size: 20px; margin-bottom: 3px; font-style: normal; }
-        label { font-weight: 600; font-size: 11px; color: #4b5563; }
-        
-        /* Hilangkan navigasi dan tombol saat mau nge-print slip gaji */
-        @media print { 
-            .bottom-nav, button { display: none !important; } 
-            .card { box-shadow: none; border: none; padding: 0; }
-            body { background: white; padding: 0; }
-        }
+        @media print { .bottom-nav, button, .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 
 <div id="p-home" class="page active">
     <div class="card" style="background:var(--primary); color:white;">
-        <h2 style="margin:0; font-size:18px;" id="dash-pt">PERUSAHAAN UTAMA</h2>
-        <p style="margin:5px 0 0 0; font-size:12px;">Hari Ini: <span id="dash-tgl"></span></p>
+        <h2 id="dash-pt" style="margin:0; font-size:16px;">LOADING...</h2>
+        <p id="dash-tgl" style="margin:5px 0 0 0; font-size:11px;"></p>
     </div>
     <div class="grid-2">
-        <div class="card" style="text-align:center;"><h3>Total Karyawan</h3><h1 style="margin:0; color:var(--dark);" id="v-tot-kar">0</h1></div>
-        <div class="card" style="text-align:center;"><h3>Hadir Hari Ini</h3><h1 style="margin:0; color:var(--success);" id="v-tot-hadir">0</h1></div>
+        <div class="card" style="text-align:center;"><h3>Karyawan</h3><h1 id="v-tot-kar">0</h1></div>
+        <div class="card" style="text-align:center;"><h3>Hadir Hari Ini</h3><h1 id="v-tot-hadir">0</h1></div>
     </div>
 </div>
 
 <div id="p-karyawan" class="page">
     <div class="card">
-        <h3>Tambah / Edit Karyawan</h3>
+        <h3>Input/Edit Karyawan</h3>
+        <input type="text" id="k-id" placeholder="ID / NIK">
+        <input type="text" id="k-nama" placeholder="Nama Lengkap">
         <div class="grid-2">
-            <div><label>ID Karyawan</label><input type="text" id="k-id" placeholder="NIK-001"></div>
-            <div><label>Nama Lengkap</label><input type="text" id="k-nama" placeholder="Budi Santoso"></div>
-            <div><label>Jabatan</label><input type="text" id="k-jabatan" placeholder="Staff"></div>
-            <div><label>Gaji Pokok (Per Hari)</label><input type="number" id="k-gaji" value="100000"></div>
+            <input type="text" id="k-jabatan" placeholder="Jabatan">
+            <input type="number" id="k-gaji" placeholder="Gaji Pokok/Hari">
         </div>
-        <button class="btn-main" onclick="simpanKaryawan()">💾 Simpan Data</button>
-        <button class="btn-danger" style="margin-top:5px; display:none;" id="btn-batal-k" onclick="batalEditKaryawan()">❌ Batal Edit</button>
+        <button class="btn-main" onclick="simpanKaryawan()">💾 SIMPAN DATA</button>
+        <button class="btn-danger" id="btn-batal-k" style="display:none;" onclick="batalEdit()">BATAL</button>
     </div>
-    <div class="card">
-        <h3>Daftar Karyawan</h3>
-        <div id="view-karyawan" style="overflow-x:auto;"></div>
-    </div>
+    <div class="card"><h3>Daftar Karyawan</h3><div id="view-karyawan"></div></div>
 </div>
 
 <div id="p-absen" class="page">
     <div class="card">
-        <h3>Input Absensi & Lembur</h3>
+        <h3>Absensi & Lembur</h3>
+        <label>Tanggal</label><input type="date" id="a-tgl">
+        <label>Pilih Karyawan</label><select id="a-kar"></select>
         <div class="grid-2">
-            <div><label>Tanggal</label><input type="date" id="a-tgl"></div>
-            <div><label>Pilih Karyawan</label><select id="a-karyawan"></select></div>
-            <div><label>Status Kehadiran</label>
-                <select id="a-status">
-                    <option value="HADIR">✅ HADIR</option>
-                    <option value="SAKIT">🤒 SAKIT</option>
-                    <option value="IZIN">📝 IZIN</option>
-                    <option value="ALPA">❌ ALPA</option>
-                </select>
-            </div>
-            <div><label>Lembur (Berapa Jam?)</label><input type="number" id="a-lembur" value="0" min="0"></div>
+            <select id="a-stat">
+                <option value="HADIR">HADIR</option>
+                <option value="SAKIT">SAKIT</option>
+                <option value="IZIN">IZIN</option>
+                <option value="ALPA">ALPA</option>
+            </select>
+            <input type="number" id="a-lembur" placeholder="Jam Lembur" value="0">
         </div>
-        <label>Keterangan (Opsional)</label><input type="text" id="a-ket" placeholder="Cth: Sakit demam...">
-        <button class="btn-main" onclick="simpanAbsen()">⚡ Simpan Absen</button>
+        <button class="btn-main" onclick="simpanAbsen()">⚡ CATAT ABSEN</button>
     </div>
-    <div class="card">
-        <h3>Riwayat Absensi Terakhir</h3>
-        <div id="view-absen" style="overflow-x:auto;"></div>
-    </div>
+    <div class="card"><h3>Riwayat Absen</h3><div id="view-absen"></div></div>
 </div>
 
-<div id="p-payroll" class="page">
-    <div class="card">
-        <h3>Kalkulator Gaji & Cetak Slip</h3>
-        <div class="grid-2">
-            <div><label>Pilih Bulan</label><input type="month" id="p-bln"></div>
-            <div><label>Pilih Karyawan</label><select id="p-karyawan"></select></div>
-            <div style="grid-column: span 2;"><label>Tarif Lembur (Per Jam)</label><input type="number" id="p-tarif-lembur" value="20000"></div>
-        </div>
-        <button class="btn-main" onclick="hitungGaji()">💰 Hitung & Tampilkan Slip</button>
+<div id="p-gaji" class="page">
+    <div class="card no-print">
+        <h3>Cetak Slip Gaji</h3>
+        <input type="month" id="g-bln">
+        <select id="g-kar"></select>
+        <input type="number" id="g-tarif" placeholder="Tarif Lembur/Jam" value="20000">
+        <button class="btn-main" onclick="hitungGaji()">💰 LIHAT SLIP</button>
     </div>
-    
-    <div class="card" id="view-slip-container" style="display:none;">
-        <div id="view-slip" style="padding:10px; border:1px dashed #ccc; margin-bottom:15px;"></div>
-        <button class="btn-main" style="background:var(--success);" onclick="window.print()">🖨️ Cetak Slip ke PDF / Printer</button>
-    </div>
+    <div id="view-slip" class="card" style="display:none;"></div>
 </div>
 
-<div id="p-seting" class="page">
+<div id="p-set" class="page">
     <div class="card">
-        <h3>Pengaturan HRD</h3>
-        <label>Nama Perusahaan / Toko:</label>
-        <input type="text" id="set-pt" oninput="simpanSet()" placeholder="Contoh: PT. Maju Bersama">
-        
-        <hr style="margin:20px 0; border:1px solid #e5e7eb;">
-        <button class="btn-danger" onclick="resetData()">⚠️ RESET SEMUA DATA HRD</button>
+        <h3>Seting</h3>
+        <input type="text" id="set-pt" placeholder="Nama Perusahaan" oninput="simpanSet()">
+        <button class="btn-danger" onclick="hapusSemua()">⚠️ HAPUS SEMUA DATA</button>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <button class="nav-item active" onclick="bukaTab('home')"><i>📊</i>Dash</button>
-    <button class="nav-item" onclick="bukaTab('karyawan')"><i>👥</i>Pegawai</button>
-    <button class="nav-item" onclick="bukaTab('absen')"><i>📝</i>Absen</button>
-    <button class="nav-item" onclick="bukaTab('payroll')"><i>💰</i>Gaji</button>
-    <button class="nav-item" onclick="bukaTab('seting')"><i>⚙️</i>Seting</button>
+    <button class="nav-item active" onclick="buka('home')">📊<br>Dash</button>
+    <button class="nav-item" onclick="buka('karyawan')">👥<br>Pegawai</button>
+    <button class="nav-item" onclick="buka('absen')">📝<br>Absen</button>
+    <button class="nav-item" onclick="buka('gaji')">💰<br>Gaji</button>
+    <button class="nav-item" onclick="buka('set')">⚙️<br>Seting</button>
 </div>
 
 <script>
-    // --- DATABASE & FUNGSI DASAR ---
-    const getVal = (id) => document.getElementById(id).value;
-    const setVal = (id, val) => document.getElementById(id).value = val;
+    // FIX DATABASE: Coba ambil kunci lama kalau kunci baru kosong
+    let db_k = JSON.parse(localStorage.getItem('hr_kar')) || JSON.parse(localStorage.getItem('karyawan')) || [];
+    let db_a = JSON.parse(localStorage.getItem('hr_absen')) || JSON.parse(localStorage.getItem('absensi')) || [];
     
-    let db_kar = JSON.parse(localStorage.getItem('hr_kar')) || []; 
-    let db_absen = JSON.parse(localStorage.getItem('hr_absen')) || [];
-    
-    // --- KUNCI TANGGAL MAKSIMAL HARI INI ---
-    let now = new Date(); 
-    let localIso = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
-    let today = localIso.slice(0,10);
-    let thisMonth = localIso.slice(0,7);
-    
-    document.getElementById('dash-tgl').innerText = now.toLocaleDateString('id-ID', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-    
-    setVal('a-tgl', today);
-    document.getElementById('a-tgl').setAttribute('max', today); // GEMBOK TANGGAL ABSEN
-    setVal('p-bln', thisMonth);
+    let now = new Date();
+    let hariIni = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0,10);
+    document.getElementById('a-tgl').value = hariIni;
+    document.getElementById('a-tgl').setAttribute('max', hariIni); // KUNCI TANGGAL 28 DST
+    document.getElementById('dash-tgl').innerText = now.toDateString();
 
-    // --- FUNGSI SETING ---
-    function simpanSet() { localStorage.setItem('hr_pt', getVal('set-pt')); refreshUI(); }
+    function simpanSet() { localStorage.setItem('hr_pt', document.getElementById('set-pt').value); render(); }
 
-    // --- FUNGSI KARYAWAN ---
-    function simpanKaryawan() { 
-        let id = getVal('k-id').toUpperCase(); let nama = getVal('k-nama'); 
-        if(!id || !nama) return alert("ID dan Nama wajib diisi!"); 
-        
-        let obj = { id: id, nama: nama, jabatan: getVal('k-jabatan'), gaji: parseInt(getVal('k-gaji')) || 0 }; 
-        let idx = db_kar.findIndex(x => x.id === id); 
-        
-        if(idx > -1) { 
-            if(confirm("ID sudah ada! Yakin update?")) db_kar[idx] = obj; else return; 
-        } else { db_kar.push(obj); } 
-        
-        localStorage.setItem('hr_kar', JSON.stringify(db_kar)); 
-        alert("Data Karyawan Tersimpan!"); batalEditKaryawan(); refreshUI(); 
-    }
-    
-    function editKaryawan(id) { 
-        let k = db_kar.find(x => x.id === id); if(!k) return; 
-        setVal('k-id', k.id); document.getElementById('k-id').readOnly = true; document.getElementById('k-id').style.background = "#e5e7eb"; 
-        setVal('k-nama', k.nama); setVal('k-jabatan', k.jabatan); setVal('k-gaji', k.gaji || 0);
-        document.getElementById('btn-batal-k').style.display = "block"; window.scrollTo(0,0); 
-    }
-    
-    function batalEditKaryawan() { 
-        document.getElementById('k-id').readOnly = false; document.getElementById('k-id').style.background = "#fff"; 
-        ['k-id','k-nama','k-jabatan'].forEach(id => setVal(id, '')); setVal('k-gaji', '100000');
-        document.getElementById('btn-batal-k').style.display = "none"; 
-    }
-    
-    function hapusKaryawan(id) { 
-        if(confirm("YAKIN HAPUS PEGAWAI INI?")) { 
-            db_kar = db_kar.filter(x => x.id !== id); 
-            localStorage.setItem('hr_kar', JSON.stringify(db_kar)); refreshUI(); 
-        } 
+    function simpanKaryawan() {
+        let id = document.getElementById('k-id').value;
+        let nm = document.getElementById('k-nama').value;
+        if(!id || !nm) return alert("Isi Nama & ID!");
+        let idx = db_k.findIndex(x => x.id === id);
+        let obj = {id:id, nama:nm, jabatan:document.getElementById('k-jabatan').value, gaji:document.getElementById('k-gaji').value};
+        if(idx > -1) db_k[idx] = obj; else db_k.push(obj);
+        localStorage.setItem('hr_kar', JSON.stringify(db_k));
+        batalEdit(); render();
     }
 
-    // --- FUNGSI ABSEN & LEMBUR ---
     function simpanAbsen() {
-        let tgl = getVal('a-tgl'); let status = getVal('a-status'); let id_kar = getVal('a-karyawan'); 
-        let lembur = parseInt(getVal('a-lembur')) || 0; let ket = getVal('a-ket');
-        
-        if(!id_kar) return alert("Pilih karyawan dulu!");
-        let cek = db_absen.findIndex(x => x.tgl === tgl && x.id_kar === id_kar);
-        if(cek > -1) { 
-            if(!confirm(`Sudah diabsen tgl ${tgl}. Mau ditimpa/diupdate?`)) return; 
-            db_absen.splice(cek, 1); 
-        }
-        
-        db_absen.push({ id_absen: Date.now(), tgl: tgl, status: status, id_kar: id_kar, lembur: lembur, ket: ket });
-        localStorage.setItem('hr_absen', JSON.stringify(db_absen));
-        alert(`Absen ${status} tersimpan!`); setVal('a-ket', ''); setVal('a-lembur', '0'); refreshUI();
+        let tgl = document.getElementById('a-tgl').value;
+        let kar = document.getElementById('a-kar').value;
+        if(!kar) return alert("Pilih karyawan!");
+        db_a.push({tgl:tgl, id:kar, status:document.getElementById('a-stat').value, lembur:document.getElementById('a-lembur').value});
+        localStorage.setItem('hr_absen', JSON.stringify(db_a));
+        alert("Selesai!"); render();
     }
 
-    // --- FUNGSI KALKULATOR GAJI (PAYROLL) ---
     function hitungGaji() {
-        let id = getVal('p-karyawan'); let bln = getVal('p-bln'); 
-        let trfLembur = parseInt(getVal('p-tarif-lembur')) || 0;
+        let id = document.getElementById('g-kar').value;
+        let bln = document.getElementById('g-bln').value;
+        let k = db_k.find(x => x.id === id);
+        let absen = db_a.filter(x => x.id === id && x.tgl.startsWith(bln));
+        let hadir = absen.filter(x => x.status === "HADIR").length;
+        let totLembur = absen.reduce((s, x) => s + (parseInt(x.lembur)||0), 0);
+        let gapok = hadir * (parseInt(k.gaji)||0);
+        let uLembur = totLembur * (parseInt(document.getElementById('g-tarif').value)||0);
         
-        if(!id || !bln) return alert("Pilih Karyawan dan Bulan terlebih dahulu!");
-        
-        let k = db_kar.find(x => x.id === id);
-        let absenBln = db_absen.filter(x => x.id_kar === id && x.tgl.startsWith(bln));
-        
-        // Hitung total hadir dan total jam lembur di bulan tersebut
-        let hadir = absenBln.filter(x => x.status === 'HADIR').length;
-        let totLembur = absenBln.reduce((sum, x) => sum + (parseInt(x.lembur) || 0), 0);
-        
-        // Kalkulasi Uang
-        let gapok = (k.gaji || 0) * hadir;
-        let uangLembur = totLembur * trfLembur;
-        let total = gapok + uangLembur;
-        
-        // Buat Template Slip Gaji
-        let pt = localStorage.getItem('hr_pt') || 'PERUSAHAAN UTAMA';
-        let html = `
-            <div style="text-align:center; border-bottom:2px dashed #000; padding-bottom:10px; margin-bottom:10px;">
-                <h2 style="margin:0;">${pt.toUpperCase()}</h2>
-                <p style="margin:0; font-size:12px;">SLIP GAJI KARYAWAN</p>
-            </div>
-            <p style="font-size:13px; line-height:1.6;">
-                <b>ID / Nama:</b> ${k.id} - ${k.nama}<br>
-                <b>Jabatan:</b> ${k.jabatan || '-'}<br>
-                <b>Periode:</b> ${bln}
-            </p>
-            <table style="width:100%; font-size:12px; border-collapse:collapse; margin-top:10px;" border="1">
-                <tr>
-                    <td style="padding:6px;">Gaji Pokok (${hadir}x Hadir)</td>
-                    <td style="padding:6px; text-align:right;">Rp ${gapok.toLocaleString('id-ID')}</td>
-                </tr>
-                <tr>
-                    <td style="padding:6px;">Lembur (${totLembur} Jam)</td>
-                    <td style="padding:6px; text-align:right;">Rp ${uangLembur.toLocaleString('id-ID')}</td>
-                </tr>
-                <tr style="background:#f3f4f6;">
-                    <th style="padding:6px; font-size:14px;">TOTAL DITERIMA</th>
-                    <th style="padding:6px; text-align:right; font-size:14px;">Rp ${total.toLocaleString('id-ID')}</th>
-                </tr>
-            </table>
-            <p style="text-align:center; font-size:10px; margin-top:20px; color:#6b7280;">
-                <i>Dicetak secara otomatis oleh sistem HRD Master Pro</i>
-            </p>
+        document.getElementById('view-slip').innerHTML = `
+            <h2 style="text-align:center">${localStorage.getItem('hr_pt')||'SLIP GAJI'}</h2>
+            <hr>
+            Nama: ${k.nama}<br>Periode: ${bln}<br>Hadir: ${hadir} Hari<hr>
+            Gapok: Rp ${gapok.toLocaleString()}<br>Lembur: Rp ${uLembur.toLocaleString()}<br>
+            <b>Total: Rp ${(gapok+uLembur).toLocaleString()}</b><br><br>
+            <button class="btn-main no-print" onclick="window.print()">PRINT</button>
         `;
-        document.getElementById('view-slip').innerHTML = html;
-        document.getElementById('view-slip-container').style.display = 'block';
+        document.getElementById('view-slip').style.display = 'block';
     }
 
-    // --- REFRESH TAMPILAN ---
-    function refreshUI() { 
-        let pt = localStorage.getItem('hr_pt') || 'PERUSAHAAN UTAMA'; 
-        document.getElementById('dash-pt').innerText = pt.toUpperCase(); 
-        setVal('set-pt', pt === 'PERUSAHAAN UTAMA' ? '' : pt); 
+    function render() {
+        document.getElementById('dash-pt').innerText = localStorage.getItem('hr_pt') || "HRD MASTER PRO";
+        document.getElementById('v-tot-kar').innerText = db_k.length;
+        document.getElementById('v-tot-hadir').innerText = db_a.filter(x => x.tgl === hariIni && x.status === "HADIR").length;
         
-        document.getElementById('v-tot-kar').innerText = db_kar.length;
-        document.getElementById('v-tot-hadir').innerText = db_absen.filter(x => x.tgl === today && x.status === 'HADIR').length;
+        let hK = "<table><tr><th>ID</th><th>Nama</th><th>Aksi</th></tr>";
+        let opt = "<option value=''>- Pilih -</option>";
+        db_k.forEach(x => {
+            hK += `<tr><td>${x.id}</td><td>${x.nama}</td><td><button onclick="editK('${x.id}')">✏️</button></td></tr>`;
+            opt += `<option value="${x.id}">${x.nama}</option>`;
+        });
+        document.getElementById('view-karyawan').innerHTML = hK + "</table>";
+        document.getElementById('a-kar').innerHTML = opt;
+        document.getElementById('g-kar').innerHTML = opt;
 
-        // Dropdown Karyawan
-        let optKar = "<option value=''>-- Pilih Karyawan --</option>"; 
-        db_kar.forEach(x => optKar += `<option value="${x.id}">${x.id} - ${x.nama}</option>`); 
-        document.getElementById('a-karyawan').innerHTML = optKar;
-        document.getElementById('p-karyawan').innerHTML = optKar;
-
-        // Tabel Karyawan
-        let h_kar = "<table><tr><th>Pegawai</th><th>Gaji/Hari</th><th>Aksi</th></tr>"; 
-        db_kar.forEach(x => { 
-            h_kar += `<tr>
-                <td><b>${x.id}</b><br>${x.nama}<br><span style="color:gray;font-size:9px;">${x.jabatan}</span></td>
-                <td>Rp ${(x.gaji||0).toLocaleString('id-ID')}</td>
-                <td><button class='btn-main' style='padding:4px 8px; font-size:12px; margin-bottom:2px;' onclick='editKaryawan("${x.id}")'>✏️</button><br>
-                <button class='btn-danger' style='padding:4px 8px; font-size:12px;' onclick='hapusKaryawan("${x.id}")'>🗑️</button></td>
-            </tr>`; 
-        }); 
-        document.getElementById('view-karyawan').innerHTML = h_kar + "</table>"; 
-
-        // Tabel Absen
-        let h_absen = "<table><tr><th>Tgl</th><th>Pegawai</th><th>Status</th></tr>"; 
-        db_absen.sort((a,b)=>b.id_absen-a.id_absen).slice(0, 50).forEach(x => { 
-            let k = db_kar.find(y => y.id === x.id_kar); let namaKar = k ? k.nama : 'Dihapus';
-            let bgBadge = x.status==='HADIR'?'bg-success':(x.status==='ALPA'?'bg-danger':'bg-warn');
-            let jamLbr = x.lembur > 0 ? `<br><span style="font-size:10px; color:var(--primary); font-weight:bold;">+${x.lembur} Jam Lembur</span>` : '';
-            
-            h_absen += `<tr>
-                <td>${x.tgl.slice(5,10)}</td>
-                <td><b>${namaKar}</b>${jamLbr}</td>
-                <td style='text-align:center;'><span class='badge ${bgBadge}'>${x.status}</span></td>
-            </tr>`; 
-        }); 
-        document.getElementById('view-absen').innerHTML = h_absen + "</table>"; 
+        let hA = "<table><tr><th>Tgl</th><th>Nama</th><th>Stat</th></tr>";
+        db_a.slice(-10).reverse().forEach(x => {
+            let k = db_k.find(y => y.id === x.id);
+            hA += `<tr><td>${x.tgl.slice(5)}</td><td>${k?k.nama:'??'}</td><td>${x.status}</td></tr>`;
+        });
+        document.getElementById('view-absen').innerHTML = hA + "</table>";
     }
 
-    function resetData() { 
-        if(confirm('⚠️ YAKIN HAPUS SEMUA DATA HRD?')) { localStorage.removeItem('hr_kar'); localStorage.removeItem('hr_absen'); location.reload(); } 
+    function editK(id) {
+        let x = db_k.find(y => y.id === id);
+        document.getElementById('k-id').value = x.id;
+        document.getElementById('k-nama').value = x.nama;
+        document.getElementById('k-jabatan').value = x.jabatan;
+        document.getElementById('k-gaji').value = x.gaji;
+        document.getElementById('btn-batal-k').style.display = 'block';
+        buka('karyawan');
     }
-    
-    function bukaTab(id) { 
-        document.querySelectorAll('.page, .nav-item').forEach(e => e.classList.remove('active')); 
-        document.getElementById('p-'+id).classList.add('active'); 
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(n => { if(n.getAttribute('onclick').includes(id)) n.classList.add('active'); }); 
+
+    function batalEdit() {
+        document.getElementById('k-id').value = '';
+        document.getElementById('k-nama').value = '';
+        document.getElementById('btn-batal-k').style.display = 'none';
     }
-    
-    refreshUI();
+
+    function buka(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('p-'+id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+
+    function hapusSemua() { if(confirm("Hapus semua?")) { localStorage.clear(); location.reload(); } }
+
+    render();
 </script>
 </body>
 </html>
