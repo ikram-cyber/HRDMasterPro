@@ -104,6 +104,7 @@
     let PT = localStorage.getItem('hr_pt') || "HRD MASTER PRO";
 
     let now = new Date();
+    // Kunci tanggal maksimal HARI INI (27 Maret 2026), besok gembok.
     let hariIni = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0,10);
     document.getElementById('a-tgl').value = hariIni;
     document.getElementById('a-tgl').setAttribute('max', hariIni);
@@ -169,8 +170,15 @@
                 <tr><td>Uang Transport (${h}x)</td><td align="right">${ut.toLocaleString()}</td></tr>
                 <tr><td>Lembur (${jam}j)</td><td align="right">${ul.toLocaleString()}</td></tr>
                 <tr style="background:#eee; font-weight:bold;"><td>TOTAL BERSIH</td><td align="right">Rp ${(gp+um+ut+ul).toLocaleString()}</td></tr>
-            </table><br>
-            <button class="btn-main no-print" onclick="window.print()">🖨️ CETAK SEKARANG</button>
+            </table>
+            <div style="margin-top:40px; display:flex; justify-content:flex-end;">
+                <div style="text-align:center; width:150px;">
+                    <p style="margin:0">HRD ${PT},</p>
+                    <br><br><br>
+                    <p style="margin:0; border-top:1px solid #000;">( ________________ )</p>
+                </div>
+            </div>
+            <button class="btn-main no-print" onclick="window.print()" style="margin-top:20px;">🖨️ CETAK SEKARANG</button>
         `;
         document.getElementById('v-slip').style.display = 'block';
     }
