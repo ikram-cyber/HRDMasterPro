@@ -3,301 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HRD Master Pro - PROFESSIONAL EDITION</title>
+    <title>HRD Master Pro - Ultimate HRIS</title>
     <style>
-        :root { --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --danger: #dc2626; --warn: #d97706; --bg: #f8fafc; --text: #334155; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; padding-bottom: 80px; font-size: 13px; }
-        .card { background: white; padding: 16px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 16px; border: 1px solid #e2e8f0; }
-        h3 { margin: 0 0 12px 0; color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 15px; font-weight: 600; text-transform: uppercase; }
-        input, select, button { width: 100%; padding: 12px; margin: 6px 0 12px 0; border-radius: 6px; border: 1px solid #cbd5e1; box-sizing: border-box; font-family: inherit; font-size: 13px; }
-        input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
+        :root { --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --danger: #dc2626; --warn: #d97706; --bg: #f1f5f9; --text: #334155; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); margin: 0; padding: 12px; padding-bottom: 80px; font-size: 13px; }
+        .card { background: white; padding: 16px; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 16px; border: 1px solid #e2e8f0; }
+        h3 { margin: 0 0 15px 0; color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 14px; text-transform: uppercase; font-weight: bold; display: flex; justify-content: space-between; align-items: center;}
+        input, select, button { width: 100%; padding: 10px 12px; margin: 5px 0 12px 0; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; transition: 0.2s; }
+        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn-main { background: var(--accent); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .btn-main { background: var(--accent); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .btn-main:hover { background: #1d4ed8; }
         .btn-success { background: var(--success); color: white; border: none; font-weight: bold; cursor: pointer; }
         .btn-danger { background: var(--danger); color: white; border: none; cursor: pointer; }
-        .btn-sm { padding: 6px 10px; font-size: 11px; margin: 0; width: auto; border-radius: 4px; }
-        .btn-edit { background: var(--warn); color: white; border: none; }
+        .btn-warn { background: var(--warn); color: white; border: none; cursor: pointer; }
+        .btn-sm { padding: 5px 8px; font-size: 11px; margin: 0 2px 0 0; width: auto; border-radius: 4px; display: inline-block;}
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 5px; }
+        th, td { padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: middle; }
+        th { background: #f8fafc; font-weight: bold; color: var(--primary); text-transform: uppercase; }
+        .badge { padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .bg-green { background: #dcfce7; color: #16a34a; } .bg-red { background: #fee2e2; color: #dc2626; } .bg-yellow { background: #fef3c7; color: #d97706; }
         
-        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
-        th, td { padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: left; }
-        th { background: #f1f5f9; font-weight: 600; color: var(--primary); }
+        .page { display: none; animation: fadeIn 0.3s ease; } .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        .page { display: none; } .active { display: block; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e2e8f0; z-index: 1000; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
-        .nav-item { border: none; background: none; font-size: 11px; color: #64748b; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; font-weight: 500; }
-        .nav-item.active { color: var(--accent); font-weight: 700; }
-        
-        /* SLIP GAJI PROFESSIONAL PRINT LAYOUT */
-        .slip-box { font-family: 'Courier New', Courier, monospace; color: #000; font-size: 12px; line-height: 1.5; }
-        .slip-header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 12px; padding-bottom: 8px; }
-        .slip-title { font-size: 18px; font-weight: bold; margin: 0; text-transform: uppercase; }
-        .slip-info { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px dashed #000; padding-bottom: 8px; }
-        .slip-table { width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 12px; }
-        .slip-table th, .slip-table td { border: 1px solid #000; padding: 8px; vertical-align: top; }
-        .slip-table th { background: #f8fafc !important; text-align: center; font-weight: bold; }
-        .slip-total { border: 2px solid #000; padding: 10px; font-size: 14px; font-weight: bold; text-align: center; margin-bottom: 20px; background: #f1f5f9; }
-        .ttd-area { display: flex; justify-content: space-between; text-align: center; margin-top: 20px; }
-        .ttd-box { width: 45%; }
-        .scrollable { max-height: 350px; overflow-y: auto; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0; z-index: 1000; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); }
+        .nav-item { border: none; background: none; font-size: 10px; color: #64748b; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; font-weight: 600; margin:0; padding:0;}
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 20px; margin-bottom: 2px; }
+        .scrollable { max-height: 400px; overflow-y: auto; }
+        label { font-size: 11px; font-weight: 600; color: #475569; margin-bottom: -3px; display: block; }
+
+        /* SLIP GAJI PRINT LAYOUT */
+        .slip-box { font-family: 'Courier New', Courier, monospace; color: #000; font-size: 12px; line-height: 1.4; border: 2px solid #000; padding: 20px; background: white; }
+        .slip-header { text-align: center; border-bottom: 3px double #000; margin-bottom: 15px; padding-bottom: 10px; }
+        .slip-title { font-size: 20px; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .slip-info { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px dashed #000; padding-bottom: 10px; }
+        .slip-table { width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 15px; }
+        .slip-table th, .slip-table td { border: 1px solid #000; padding: 6px 10px; vertical-align: top; }
+        .slip-table th { background: #f1f5f9 !important; text-align: center; font-weight: bold; -webkit-print-color-adjust: exact; }
+        .slip-total { border: 2px solid #000; padding: 12px; font-size: 15px; font-weight: bold; text-align: center; margin-bottom: 25px; background: #e2e8f0; -webkit-print-color-adjust: exact; }
+        .ttd-area { display: flex; justify-content: space-between; text-align: center; margin-top: 10px; }
         
         @media print { 
             body { background: white; padding: 0; margin: 0; }
-            .no-print, .bottom-nav { display: none !important; } 
+            .no-print { display: none !important; } 
             .card { border: none; box-shadow: none; margin: 0; padding: 0; } 
-            .slip-box { font-size: 12pt; }
+            .slip-box { border: none; padding: 0; }
         }
     </style>
 </head>
 <body>
 
 <div id="p-home" class="page active">
-    <div class="card" style="background:var(--primary); color:white; border:none; text-align:center;">
-        <h2 id="v-pt" style="margin:0; font-size: 20px; letter-spacing: 1px;">HRD MASTER PRO</h2>
-        <p id="v-tgl" style="margin:8px 0 0 0; opacity:0.8; font-size:12px;"></p>
+    <div class="card" style="background: linear-gradient(135deg, var(--primary), #1e293b); color:white; border:none; text-align:center; padding: 25px 15px;">
+        <h2 id="v-pt" style="margin:0; font-size: 22px; letter-spacing: 1px;">HRD MASTER PRO</h2>
+        <p id="v-tgl" style="margin:5px 0 0 0; opacity:0.8; font-size:12px;"></p>
     </div>
     <div class="grid">
-        <div class="card" style="text-align:center; padding: 20px 10px;">
-            <div style="font-size:12px; color:#64748b; font-weight:bold;">TOTAL PEGAWAI</div>
-            <h1 id="t-k" style="margin:10px 0 0 0; color:var(--primary); font-size:32px;">0</h1>
+        <div class="card" style="text-align:center; padding: 20px 10px; border-top: 4px solid var(--primary);">
+            <div style="font-size:11px; color:#64748b; font-weight:bold;">TOTAL PEGAWAI</div>
+            <h1 id="t-k" style="margin:5px 0 0 0; color:var(--primary); font-size:36px;">0</h1>
         </div>
-        <div class="card" style="text-align:center; padding: 20px 10px;">
-            <div style="font-size:12px; color:#64748b; font-weight:bold;">HADIR HARI INI</div>
-            <h1 id="t-h" style="margin:10px 0 0 0; color:var(--success); font-size:32px;">0</h1>
+        <div class="card" style="text-align:center; padding: 20px 10px; border-top: 4px solid var(--success);">
+            <div style="font-size:11px; color:#64748b; font-weight:bold;">HADIR HARI INI</div>
+            <h1 id="t-h" style="margin:5px 0 0 0; color:var(--success); font-size:36px;">0</h1>
         </div>
     </div>
 </div>
 
 <div id="p-kar" class="page">
     <div class="card">
-        <h3 id="f-title">📝 INPUT DATA PEGAWAI</h3>
-        <input type="text" id="k-id" placeholder="ID / NIK Karyawan" style="text-transform:uppercase;">
-        <input type="text" id="k-nm" placeholder="Nama Lengkap Karyawan">
-        <input type="text" id="k-jb" placeholder="Jabatan / Departemen">
+        <h3 id="f-title">📝 INPUT / EDIT PEGAWAI</h3>
         <div class="grid">
-            <div><label style="font-size:11px; font-weight:bold; color:#64748b;">GAJI POKOK (Harian)</label><input type="number" id="k-gp" value="0"></div>
-            <div><label style="font-size:11px; font-weight:bold; color:#64748b;">UANG MAKAN (Harian)</label><input type="number" id="k-um" value="0"></div>
-            <div><label style="font-size:11px; font-weight:bold; color:#64748b;">UANG TRANSPORT</label><input type="number" id="k-ut" value="0"></div>
-            <div><label style="font-size:11px; font-weight:bold; color:#64748b;">TARIF LEMBUR / JAM</label><input type="number" id="k-ul" value="0"></div>
+            <div><label>ID / NIK KARYAWAN</label><input type="text" id="k-id" placeholder="Cth: K-001" style="text-transform:uppercase; font-weight:bold;"></div>
+            <div><label>NAMA LENGKAP</label><input type="text" id="k-nm" placeholder="Nama Karyawan"></div>
         </div>
-        <button id="btn-save" class="btn-main" onclick="saveK()">💾 SIMPAN DATA</button>
+        <label>JABATAN / DIVISI</label><input type="text" id="k-jb" placeholder="Cth: Staff Gudang">
+        
+        <div style="background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:12px;">
+            <p style="margin:0 0 10px 0; font-size:12px; font-weight:bold; border-bottom:1px solid #cbd5e1; padding-bottom:5px;">Rincian Kompensasi & Potongan Tetap</p>
+            <div class="grid">
+                <div><label>GAJI POKOK (Harian)</label><input type="number" id="k-gp" value="0"></div>
+                <div><label>UANG MAKAN (Harian)</label><input type="number" id="k-um" value="0"></div>
+                <div><label>UANG TRANSPORT (Harian)</label><input type="number" id="k-ut" value="0"></div>
+                <div><label>TARIF LEMBUR (Per Jam)</label><input type="number" id="k-ul" value="0"></div>
+                <div style="grid-column: span 2;"><label style="color:var(--danger)">POTONGAN BPJS (Per Bulan)</label><input type="number" id="k-bpjs" value="0" placeholder="Biarkan 0 jika tidak ada"></div>
+            </div>
+        </div>
+        
+        <button id="btn-save" class="btn-main" onclick="saveK()">💾 SIMPAN DATA KARYAWAN</button>
         <button id="btn-cancel" class="btn-danger" style="display:none;" onclick="resK()">❌ BATAL EDIT</button>
     </div>
     <div class="card">
-        <h3>📋 DAFTAR PEGAWAI</h3>
+        <h3>📋 MASTER DATA PEGAWAI</h3>
+        <input type="text" id="cari-kar" placeholder="🔍 Cari Nama / NIK Karyawan..." onkeyup="render()">
         <div class="scrollable" id="list-k"></div>
     </div>
 </div>
 
 <div id="p-abs" class="page">
     <div class="card">
-        <h3>⏱️ CATAT ABSENSI & LEMBUR</h3>
-        <label style="font-size:11px; font-weight:bold; color:#64748b;">TANGGAL ABSEN</label>
-        <input type="date" id="a-tgl">
-        <label style="font-size:11px; font-weight:bold; color:#64748b;">PILIH PEGAWAI</label>
-        <select id="a-sel"></select>
+        <h3>⏱️ CATAT KEHADIRAN HARIAN</h3>
+        <div class="grid">
+            <div><label>TANGGAL</label><input type="date" id="a-tgl"></div>
+            <div><label>PILIH KARYAWAN</label><select id="a-sel"></select></div>
+        </div>
         <div class="grid">
             <div>
-                <label style="font-size:11px; font-weight:bold; color:#64748b;">STATUS KEHADIRAN</label>
+                <label>STATUS</label>
                 <select id="a-st">
                     <option value="HADIR">HADIR</option>
                     <option value="SAKIT">SAKIT</option>
                     <option value="IZIN">IZIN</option>
-                    <option value="ALPA">ALPA</option>
+                    <option value="ALPA">ALPA (Tanpa Keterangan)</option>
                 </select>
             </div>
-            <div>
-                <label style="font-size:11px; font-weight:bold; color:#64748b;">TOTAL JAM LEMBUR</label>
-                <input type="number" id="a-lb" value="0" placeholder="0">
-            </div>
+            <div><label>JAM LEMBUR</label><input type="number" id="a-lb" value="0" placeholder="0"></div>
         </div>
-        <button class="btn-main" onclick="saveA()">⚡ SUBMIT ABSEN</button>
+        <button class="btn-main" onclick="saveA()">⚡ SUBMIT ABSENSI</button>
     </div>
     <div class="card">
-        <h3>🕒 RIWAYAT ABSENSI TERAKHIR</h3>
+        <h3>🕒 LOG ABSENSI TERAKHIR</h3>
         <div class="scrollable" id="list-a"></div>
     </div>
 </div>
 
 <div id="p-pay" class="page">
     <div class="card no-print">
-        <h3>💰 GENERATE SLIP GAJI</h3>
-        <label style="font-size:11px; font-weight:bold; color:#64748b;">PERIODE BULAN</label>
-        <input type="month" id="p-bln">
-        <label style="font-size:11px; font-weight:bold; color:#64748b;">PILIH PEGAWAI</label>
-        <select id="p-sel"></select>
-        <button class="btn-success" onclick="getSlip()">📄 BUAT SLIP GAJI</button>
+        <h3>💰 SISTEM PAYROLL & SLIP GAJI</h3>
+        <div class="grid">
+            <div><label>PERIODE BULAN</label><input type="month" id="p-bln" onchange="generateRekap()"></div>
+            <div><label>PILIH KARYAWAN</label><select id="p-sel"></select></div>
+        </div>
+        <div style="background:#fff7ed; padding:10px; border-radius:6px; border:1px solid #fdba74; margin-bottom:12px;">
+            <label style="color:#c2410c;">POTONGAN KASBON BULAN INI (Dinamis)</label>
+            <input type="number" id="p-kasbon" value="0" placeholder="Isi jika ada pinjaman/kasbon">
+        </div>
+        <div class="grid">
+            <button class="btn-main" onclick="getSlip()">📄 CETAK SLIP GAJI</button>
+            <button class="btn-warn" onclick="buka('rekap'); generateRekap();">📊 LIHAT REKAP MASTER</button>
+        </div>
     </div>
-    <div id="v-slip" class="card" style="display:none;"></div>
+    
+    <div id="v-slip" class="card" style="display:none; padding:5px;"></div>
+</div>
+
+<div id="p-rekap" class="page">
+    <div class="card no-print">
+        <h3 style="color:var(--warn)">📊 REKAP GAJI KESELURUHAN</h3>
+        <p style="font-size:11px; color:#64748b; margin-top:-10px;">Laporan total gaji yang harus dibayarkan perusahaan pada periode terpilih.</p>
+        <button class="btn-danger" style="margin-bottom:10px;" onclick="buka('pay')">⬅️ KEMBALI KE PAYROLL</button>
+        <div style="overflow-x:auto;">
+            <table id="tabel-rekap" border="1" style="width:100%; border-collapse:collapse; text-align:right;">
+                </table>
+        </div>
+    </div>
 </div>
 
 <div id="p-set" class="page">
     <div class="card">
-        <h3>⚙️ PENGATURAN APLIKASI</h3>
-        <label style="font-size:11px; font-weight:bold; color:#64748b;">NAMA PERUSAHAAN / TOKO</label>
-        <input type="text" id="s-pt" placeholder="Contoh: PT. MAJU MUNDUR">
-        <button class="btn-main" onclick="saveS()">🔄 UPDATE NAMA PERUSAHAAN</button>
-        <hr style="margin:24px 0; border:0; border-top:1px solid #e2e8f0;">
-        <h4 style="color:var(--danger); margin-top:0;">ZONA BAHAYA</h4>
-        <button class="btn-danger" style="padding:15px;" onclick="resetAll()">⚠️ HAPUS SEMUA DATA PERMANEN</button>
+        <h3>⚙️ PENGATURAN PERUSAHAAN</h3>
+        <label>NAMA PERUSAHAAN / TOKO (Untuk Header Slip)</label>
+        <input type="text" id="s-pt" placeholder="PT. MAJU MUNDUR">
+        <button class="btn-main" onclick="saveS()">🔄 SIMPAN NAMA</button>
+    </div>
+    
+    <div class="card" style="border-top: 3px solid var(--success);">
+        <h3 style="color:var(--success)">💾 DATABASE MANAGEMENT</h3>
+        <p style="font-size:11px; color:#64748b;">Backup data Anda secara berkala untuk mencegah kehilangan data jika aplikasi direset.</p>
+        <div class="grid">
+            <button class="btn-success" onclick="exportData()">⬇️ BACKUP DATA (.json)</button>
+            <button class="btn-warn" onclick="document.getElementById('import-file').click()">⬆️ RESTORE DATA</button>
+            <input type="file" id="import-file" style="display:none;" accept=".json" onchange="importData(event)">
+        </div>
+    </div>
+
+    <div class="card" style="border-top: 3px solid var(--danger);">
+        <h3 style="color:var(--danger)">⚠️ ZONA BERBAHAYA</h3>
+        <button class="btn-danger" style="padding:15px;" onclick="resetAll()">🗑️ HAPUS SELURUH DATA SISTEM PERMANEN</button>
     </div>
 </div>
 
 <nav class="bottom-nav no-print">
-    <div class="nav-item active" onclick="buka('home')"><span style="font-size:18px; margin-bottom:4px;">📊</span>DASHBOARD</div>
-    <div class="nav-item" onclick="buka('kar')"><span style="font-size:18px; margin-bottom:4px;">👥</span>PEGAWAI</div>
-    <div class="nav-item" onclick="buka('abs')"><span style="font-size:18px; margin-bottom:4px;">📝</span>ABSENSI</div>
-    <div class="nav-item" onclick="buka('pay')"><span style="font-size:18px; margin-bottom:4px;">💰</span>PAYROLL</div>
-    <div class="nav-item" onclick="buka('set')"><span style="font-size:18px; margin-bottom:4px;">⚙️</span>SETING</div>
+    <div class="nav-item active" onclick="buka('home')"><div class="nav-icon">📊</div>DASHBOARD</div>
+    <div class="nav-item" onclick="buka('kar')"><div class="nav-icon">👥</div>PEGAWAI</div>
+    <div class="nav-item" onclick="buka('abs')"><div class="nav-icon">📝</div>ABSENSI</div>
+    <div class="nav-item" onclick="buka('pay')"><div class="nav-icon">💰</div>PAYROLL</div>
+    <div class="nav-item" onclick="buka('set')"><div class="nav-icon">⚙️</div>SETING</div>
 </nav>
 
 <script>
-    // 1. Inisialisasi Database (Menjaga Kunci Lama Tetap Aman)
+    // --- 1. INISIALISASI DATABASE & KUNCI ASLI (JANGAN DIUBAH) ---
     let db_k = JSON.parse(localStorage.getItem('hr_kar')) || [];
     let db_a = JSON.parse(localStorage.getItem('hr_absen')) || [];
     let PT = localStorage.getItem('hr_pt') || "NAMA PERUSAHAAN";
 
-    // 2. Setting Waktu & Pengunci Tanggal
+    // --- 2. KUNCI TANGGAL (GEMBOK 28 MARET DST) ---
     let t_now = new Date();
     let hariIni = new Date(t_now.getTime() - (t_now.getTimezoneOffset() * 60000)).toISOString().slice(0,10);
     
     document.getElementById('a-tgl').value = hariIni;
-    // GEMBOK TANGGAL: Tidak bisa input absen untuk tanggal besok
-    document.getElementById('a-tgl').setAttribute('max', hariIni); 
+    document.getElementById('a-tgl').setAttribute('max', hariIni); // GEMBOK AKTIF!
     document.getElementById('p-bln').value = hariIni.slice(0,7);
 
-    // 3. Fungsi Pengaturan
+    // --- 3. FUNGSI PENGATURAN & BACKUP (PROFESIONAL) ---
     function saveS() { 
         let ptName = document.getElementById('s-pt').value;
-        if(ptName) {
-            localStorage.setItem('hr_pt', ptName); 
-            location.reload(); 
-        }
+        if(ptName) { localStorage.setItem('hr_pt', ptName); alert("Nama Perusahaan Diperbarui!"); location.reload(); }
     }
 
-    // 4. Fungsi Data Pegawai
+    function exportData() {
+        let backup = { hr_kar: db_k, hr_absen: db_a, hr_pt: PT };
+        let blob = new Blob([JSON.stringify(backup)], {type: "application/json"});
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url; a.download = `Backup_HRD_${hariIni}.json`; a.click();
+    }
+
+    function importData(event) {
+        let file = event.target.files[0];
+        if(!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let data = JSON.parse(e.target.result);
+                if(data.hr_kar && data.hr_absen) {
+                    localStorage.setItem('hr_kar', JSON.stringify(data.hr_kar));
+                    localStorage.setItem('hr_absen', JSON.stringify(data.hr_absen));
+                    if(data.hr_pt) localStorage.setItem('hr_pt', data.hr_pt);
+                    alert("Restore Database Berhasil!"); location.reload();
+                } else { alert("File JSON tidak valid!"); }
+            } catch(err) { alert("Error membaca file!"); }
+        };
+        reader.readAsText(file);
+    }
+
+    // --- 4. FUNGSI PEGAWAI (CRUD LENGKAP) ---
     function saveK() {
         let id = document.getElementById('k-id').value.trim().toUpperCase();
-        if(!id) return alert("Peringatan: ID / NIK Karyawan tidak boleh kosong!");
-        if(!document.getElementById('k-nm').value) return alert("Peringatan: Nama Karyawan wajib diisi!");
+        if(!id || !document.getElementById('k-nm').value) return alert("NAMA dan ID/NIK Wajib Diisi!");
         
         let d = { 
-            id: id, 
-            nm: document.getElementById('k-nm').value, 
-            jb: document.getElementById('k-jb').value, 
-            gp: parseInt(document.getElementById('k-gp').value) || 0, 
-            um: parseInt(document.getElementById('k-um').value) || 0, 
-            ut: parseInt(document.getElementById('k-ut').value) || 0, 
-            ul: parseInt(document.getElementById('k-ul').value) || 0 
+            id: id, nm: document.getElementById('k-nm').value, jb: document.getElementById('k-jb').value, 
+            gp: parseInt(document.getElementById('k-gp').value) || 0, um: parseInt(document.getElementById('k-um').value) || 0, 
+            ut: parseInt(document.getElementById('k-ut').value) || 0, ul: parseInt(document.getElementById('k-ul').value) || 0,
+            bpjs: parseInt(document.getElementById('k-bpjs').value) || 0 // POTONGAN BARU
         };
         
         let idx = db_k.findIndex(x => x.id === id);
         if(idx > -1) db_k[idx] = d; else db_k.push(d);
         
         localStorage.setItem('hr_kar', JSON.stringify(db_k));
-        resK(); 
-        render(); 
-        alert("Sukses: Data Pegawai Berhasil Disimpan!");
+        resK(); render(); alert("Data Karyawan Disimpan!");
     }
 
     function editK(id) {
         let x = db_k.find(y => y.id === id);
         if(!x) return;
-        document.getElementById('k-id').value = x.id; 
-        document.getElementById('k-id').readOnly = true; // Kunci ID agar tidak berubah
-        document.getElementById('k-id').style.background = "#e2e8f0";
-        document.getElementById('k-nm').value = x.nm; 
-        document.getElementById('k-jb').value = x.jb;
-        document.getElementById('k-gp').value = x.gp; 
-        document.getElementById('k-um').value = x.um;
-        document.getElementById('k-ut').value = x.ut; 
-        document.getElementById('k-ul').value = x.ul;
+        document.getElementById('k-id').value = x.id; document.getElementById('k-id').readOnly = true; document.getElementById('k-id').style.background = "#e2e8f0";
+        document.getElementById('k-nm').value = x.nm; document.getElementById('k-jb').value = x.jb;
+        document.getElementById('k-gp').value = x.gp; document.getElementById('k-um').value = x.um;
+        document.getElementById('k-ut').value = x.ut; document.getElementById('k-ul').value = x.ul;
+        document.getElementById('k-bpjs').value = x.bpjs || 0;
         
-        document.getElementById('f-title').innerText = "✏️ EDIT DATA PEGAWAI";
-        document.getElementById('btn-save').innerText = "🔄 UPDATE DATA";
-        document.getElementById('btn-cancel').style.display = "block";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('f-title').innerHTML = "✏️ EDIT DATA PEGAWAI"; document.getElementById('btn-save').innerHTML = "🔄 UPDATE DATA"; document.getElementById('btn-cancel').style.display = "block";
+        window.scrollTo(0,0);
     }
 
     function resK() {
-        document.getElementById('k-id').value = ""; 
-        document.getElementById('k-id').readOnly = false;
-        document.getElementById('k-id').style.background = "white";
-        document.getElementById('k-nm').value = ""; 
-        document.getElementById('k-jb').value = "";
-        document.getElementById('k-gp').value = 0; 
-        document.getElementById('k-um').value = 0; 
-        document.getElementById('k-ut').value = 0; 
-        document.getElementById('k-ul').value = 0;
-        
-        document.getElementById('f-title').innerText = "📝 INPUT DATA PEGAWAI";
-        document.getElementById('btn-save').innerText = "💾 SIMPAN DATA";
-        document.getElementById('btn-cancel').style.display = "none";
+        document.getElementById('k-id').value = ""; document.getElementById('k-id').readOnly = false; document.getElementById('k-id').style.background = "white";
+        document.getElementById('k-nm').value = ""; document.getElementById('k-jb').value = "";
+        document.getElementById('k-gp').value = 0; document.getElementById('k-um').value = 0; document.getElementById('k-ut').value = 0; document.getElementById('k-ul').value = 0; document.getElementById('k-bpjs').value = 0;
+        document.getElementById('f-title').innerHTML = "📝 INPUT / EDIT PEGAWAI"; document.getElementById('btn-save').innerHTML = "💾 SIMPAN DATA KARYAWAN"; document.getElementById('btn-cancel').style.display = "none";
     }
 
-    function delK(id) { 
-        if(confirm("Apakah Anda yakin ingin menghapus data pegawai ini secara permanen?")) { 
-            db_k = db_k.filter(x => x.id !== id); 
-            localStorage.setItem('hr_kar', JSON.stringify(db_k)); 
-            render(); 
-        } 
-    }
+    function delK(id) { if(confirm("Hapus Permanen Karyawan Ini?")) { db_k = db_k.filter(x => x.id !== id); localStorage.setItem('hr_kar', JSON.stringify(db_k)); render(); } }
 
-    // 5. Fungsi Absensi
+    // --- 5. FUNGSI ABSENSI ---
     function saveA() {
-        let id = document.getElementById('a-sel').value; 
-        let tgl = document.getElementById('a-tgl').value;
-        if(!id) return alert("Peringatan: Silakan pilih pegawai terlebih dahulu!");
-        
-        // Cek dan timpa jika di tanggal yang sama sudah absen
+        let id = document.getElementById('a-sel').value; let tgl = document.getElementById('a-tgl').value;
+        if(!id) return alert("Pilih Karyawan!");
         db_a = db_a.filter(x => !(x.tgl === tgl && x.id === id));
-        db_a.push({ 
-            tgl: tgl, 
-            id: id, 
-            st: document.getElementById('a-st').value, 
-            lb: parseInt(document.getElementById('a-lb').value) || 0 
-        });
-        
-        localStorage.setItem('hr_absen', JSON.stringify(db_a)); 
-        render(); 
-        alert("Sukses: Data Absensi Telah Tercatat!");
+        db_a.push({ tgl: tgl, id: id, st: document.getElementById('a-st').value, lb: parseInt(document.getElementById('a-lb').value) || 0 });
+        localStorage.setItem('hr_absen', JSON.stringify(db_a)); render(); alert("Absen Tercatat!");
     }
 
-    function delA(tgl, id) { 
-        if(confirm("Hapus data absensi ini?")) { 
-            db_a = db_a.filter(x => !(x.tgl === tgl && x.id === id)); 
-            localStorage.setItem('hr_absen', JSON.stringify(db_a)); 
-            render(); 
-        } 
-    }
+    function delA(tgl, id) { if(confirm("Hapus Riwayat Absen?")) { db_a = db_a.filter(x => !(x.tgl === tgl && x.id === id)); localStorage.setItem('hr_absen', JSON.stringify(db_a)); render(); } }
 
-    // 6. Fungsi Payroll / Cetak Slip Gaji Professional
+    // --- 6. FUNGSI PAYROLL & CETAK SLIP (STANDAR PROFESIONAL) ---
     function getSlip() {
-        let id = document.getElementById('p-sel').value; 
-        let bln = document.getElementById('p-bln').value;
-        if(!id) return alert("Peringatan: Pilih Pegawai terlebih dahulu untuk mencetak slip!");
+        let id = document.getElementById('p-sel').value; let bln = document.getElementById('p-bln').value;
+        if(!id) return alert("Pilih Karyawan!");
         
         let k = db_k.find(x => x.id === id); 
         let abs = db_a.filter(x => x.id === id && x.tgl.startsWith(bln));
         
-        let h = abs.filter(x => x.st === "HADIR").length; 
-        let s = abs.filter(x => x.st === "SAKIT").length;
-        let i = abs.filter(x => x.st === "IZIN").length;
-        let a = abs.filter(x => x.st === "ALPA").length;
+        let h = abs.filter(x => x.st === "HADIR").length; let s = abs.filter(x => x.st === "SAKIT").length;
+        let i = abs.filter(x => x.st === "IZIN").length; let a = abs.filter(x => x.st === "ALPA").length;
         let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0);
+        let kasbon = parseInt(document.getElementById('p-kasbon').value) || 0;
         
         // Kalkulasi
-        let totGP = h * k.gp;
-        let totUM = h * k.um;
-        let totUT = h * k.ut;
-        let totLbr = jamLbr * k.ul;
+        let totGP = h * k.gp; let totUM = h * k.um; let totUT = h * k.ut; let totLbr = jamLbr * k.ul;
+        let totPendapatan = totGP + totUM + totUT + totLbr;
         
-        let totalPendapatan = totGP + totUM + totUT + totLbr;
-        // Opsional: Jika ada potongan telat/alpa bisa dimasukkan ke variabel ini
-        let potonganBPJS = 0; // Ubah jika ada logic potongan fix
-        let totalPotongan = potonganBPJS; 
-        let takeHomePay = totalPendapatan - totalPotongan;
+        let bpjs = k.bpjs || 0; let totPotongan = bpjs + kasbon; 
+        let thp = totPendapatan - totPotongan;
 
-        let strBulan = new Date(bln + "-01").toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+        let nmBln = new Date(bln + "-01").toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 
         document.getElementById('v-slip').innerHTML = `
             <div class="slip-box">
@@ -308,140 +324,119 @@
                 
                 <div class="slip-info">
                     <div>
-                        <table style="margin-top:0;">
-                            <tr><td><b>N I K</b></td><td>: ${k.id}</td></tr>
-                            <tr><td><b>Nama</b></td><td>: ${k.nm}</td></tr>
+                        <table style="border:none; margin:0;">
+                            <tr><td style="border:none; padding:2px;"><b>N I K</b></td><td style="border:none; padding:2px;">: ${k.id}</td></tr>
+                            <tr><td style="border:none; padding:2px;"><b>Nama</b></td><td style="border:none; padding:2px;">: ${k.nm}</td></tr>
                         </table>
                     </div>
                     <div>
-                        <table style="margin-top:0;">
-                            <tr><td><b>Jabatan</b></td><td>: ${k.jb}</td></tr>
-                            <tr><td><b>Periode</b></td><td>: ${strBulan}</td></tr>
+                        <table style="border:none; margin:0;">
+                            <tr><td style="border:none; padding:2px;"><b>Jabatan</b></td><td style="border:none; padding:2px;">: ${k.jb}</td></tr>
+                            <tr><td style="border:none; padding:2px;"><b>Periode</b></td><td style="border:none; padding:2px;">: ${nmBln}</td></tr>
                         </table>
                     </div>
                 </div>
 
-                <div style="font-size:11px; margin-bottom:8px;">
-                    <b>Rincian Kehadiran:</b> Hadir: ${h} Hari | Sakit: ${s} | Izin: ${i} | Alpa: ${a} | Lembur: ${jamLbr} Jam
+                <div style="font-size:11px; margin-bottom:10px; border:1px solid #000; padding:5px; text-align:center;">
+                    <b>KEHADIRAN:</b> Hadir: ${h} Hari | Sakit: ${s} | Izin: ${i} | Alpa: ${a} | Lembur: ${jamLbr} Jam
                 </div>
 
                 <table class="slip-table">
-                    <tr>
-                        <th width="50%">PENDAPATAN</th>
-                        <th width="50%">POTONGAN</th>
-                    </tr>
+                    <tr><th width="50%">PENERIMAAN</th><th width="50%">POTONGAN</th></tr>
                     <tr>
                         <td>
-                            <table style="margin-top:0; border:none;">
-                                <tr><td style="border:none; padding:2px;">Gaji Pokok</td><td style="border:none; padding:2px; text-align:right;">Rp ${totGP.toLocaleString('id-ID')}</td></tr>
-                                <tr><td style="border:none; padding:2px;">Uang Makan</td><td style="border:none; padding:2px; text-align:right;">Rp ${totUM.toLocaleString('id-ID')}</td></tr>
-                                <tr><td style="border:none; padding:2px;">Uang Transport</td><td style="border:none; padding:2px; text-align:right;">Rp ${totUT.toLocaleString('id-ID')}</td></tr>
-                                <tr><td style="border:none; padding:2px;">Lembur</td><td style="border:none; padding:2px; text-align:right;">Rp ${totLbr.toLocaleString('id-ID')}</td></tr>
+                            <table style="border:none; width:100%;">
+                                <tr><td style="border:none; padding:3px;">Gaji Pokok (${h}x)</td><td style="border:none; padding:3px; text-align:right;">Rp ${totGP.toLocaleString()}</td></tr>
+                                <tr><td style="border:none; padding:3px;">Uang Makan (${h}x)</td><td style="border:none; padding:3px; text-align:right;">Rp ${totUM.toLocaleString()}</td></tr>
+                                <tr><td style="border:none; padding:3px;">Tunj. Transport (${h}x)</td><td style="border:none; padding:3px; text-align:right;">Rp ${totUT.toLocaleString()}</td></tr>
+                                <tr><td style="border:none; padding:3px;">Uang Lembur (${jamLbr}j)</td><td style="border:none; padding:3px; text-align:right;">Rp ${totLbr.toLocaleString()}</td></tr>
                             </table>
                             <br>
-                            <div style="border-top:1px dashed #000; padding-top:5px; font-weight:bold; display:flex; justify-content:space-between;">
-                                <span>TOTAL PENDAPATAN</span>
-                                <span>Rp ${totalPendapatan.toLocaleString('id-ID')}</span>
+                            <div style="border-top:1px solid #000; padding-top:5px; font-weight:bold; display:flex; justify-content:space-between;">
+                                <span>TOTAL PENERIMAAN</span><span>Rp ${totPendapatan.toLocaleString()}</span>
                             </div>
                         </td>
                         <td>
-                            <table style="margin-top:0; border:none;">
-                                <tr><td style="border:none; padding:2px;">BPJS / Kasbon</td><td style="border:none; padding:2px; text-align:right;">Rp ${potonganBPJS.toLocaleString('id-ID')}</td></tr>
+                            <table style="border:none; width:100%;">
+                                <tr><td style="border:none; padding:3px;">BPJS / Asuransi</td><td style="border:none; padding:3px; text-align:right;">Rp ${bpjs.toLocaleString()}</td></tr>
+                                <tr><td style="border:none; padding:3px;">Kasbon / Pinjaman</td><td style="border:none; padding:3px; text-align:right;">Rp ${kasbon.toLocaleString()}</td></tr>
                             </table>
                             <br><br><br>
-                            <div style="border-top:1px dashed #000; padding-top:5px; font-weight:bold; display:flex; justify-content:space-between;">
-                                <span>TOTAL POTONGAN</span>
-                                <span>Rp ${totalPotongan.toLocaleString('id-ID')}</span>
+                            <div style="border-top:1px solid #000; padding-top:5px; font-weight:bold; display:flex; justify-content:space-between;">
+                                <span>TOTAL POTONGAN</span><span>Rp ${totPotongan.toLocaleString()}</span>
                             </div>
                         </td>
                     </tr>
                 </table>
 
-                <div class="slip-total">
-                    TAKE HOME PAY : Rp ${takeHomePay.toLocaleString('id-ID')}
-                </div>
+                <div class="slip-total">TAKE HOME PAY : Rp ${thp.toLocaleString()}</div>
 
                 <div class="ttd-area">
-                    <div class="ttd-box">
-                        <p style="margin:0;">Penerima,</p>
-                        <br><br><br><br>
-                        <p style="margin:0; font-weight:bold; text-decoration:underline;">${k.nm}</p>
-                    </div>
-                    <div class="ttd-box">
-                        <p style="margin:0;">Mengetahui,</p>
-                        <p style="margin:0;">HRD & Finance</p>
-                        <br><br><br>
-                        <p style="margin:0; font-weight:bold; text-decoration:underline;">${PT}</p>
-                    </div>
+                    <div class="ttd-box"><p>Penerima,</p><br><br><br><br><p style="font-weight:bold; text-decoration:underline;">${k.nm}</p></div>
+                    <div class="ttd-box"><p>HRD & Finance,</p><br><br><br><br><p style="font-weight:bold; text-decoration:underline;">${PT}</p></div>
                 </div>
             </div>
-            <button class="btn-main no-print" onclick="window.print()" style="margin-top:24px; padding:15px; font-size:14px;">🖨️ CETAK PDF / PRINT</button>
+            <button class="btn-main no-print" onclick="window.print()" style="margin-top:20px; padding:15px; font-size:14px; width:100%;">🖨️ CETAK DOKUMEN SLIP</button>
         `;
         document.getElementById('v-slip').style.display = 'block';
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
-    // 7. Engine Render Tampilan
+    // --- 7. REKAP GAJI MASTER (FITUR BARU) ---
+    function generateRekap() {
+        let bln = document.getElementById('p-bln').value;
+        let html = `<tr style="background:#f1f5f9; text-align:center;"><th>NAMA</th><th>HADIR</th><th>PENDAPATAN</th><th>POTONGAN</th><th>THP BERSIH</th></tr>`;
+        let grandTHP = 0;
+        
+        db_k.forEach(k => {
+            let abs = db_a.filter(x => x.id === k.id && x.tgl.startsWith(bln));
+            let h = abs.filter(x => x.st === "HADIR").length;
+            let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0);
+            
+            let pndp = (h * k.gp) + (h * k.um) + (h * k.ut) + (jamLbr * k.ul);
+            let pot = k.bpjs || 0; // Kasbon dinamis tidak masuk rekap global, hanya di slip per individu (opsional)
+            let thp = pndp - pot;
+            grandTHP += thp;
+            
+            if(h > 0 || pot > 0) { // Hanya tampilkan yang ada aktivitas
+                html += `<tr><td style="text-align:left;"><b>${k.nm}</b></td><td style="text-align:center;">${h}</td><td>Rp ${pndp.toLocaleString()}</td><td>Rp ${pot.toLocaleString()}</td><td><b>Rp ${thp.toLocaleString()}</b></td></tr>`;
+            }
+        });
+        html += `<tr style="background:#e2e8f0;"><td colspan="4" style="text-align:right; font-weight:bold;">GRAND TOTAL PAYROLL:</td><td style="font-weight:bold; color:var(--danger); font-size:14px;">Rp ${grandTHP.toLocaleString()}</td></tr>`;
+        document.getElementById('tabel-rekap').innerHTML = html;
+    }
+
+    // --- 8. RENDER & UI ENGINE ---
     function render() {
         document.getElementById('v-pt').innerText = PT;
-        let optBulan = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('v-tgl').innerText = t_now.toLocaleDateString('id-ID', optBulan);
-        
+        document.getElementById('s-pt').value = PT;
+        document.getElementById('v-tgl').innerText = t_now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         document.getElementById('t-k').innerText = db_k.length;
         document.getElementById('t-h').innerText = db_a.filter(x => x.tgl === hariIni && x.st === "HADIR").length;
         
-        // Render List Pegawai
-        let lk = "<table><tr><th>NAMA / ID</th><th style='text-align:right;'>AKSI</th></tr>"; 
-        let opt = "<option value=''>-- Pilih Pegawai --</option>";
+        let pencarian = document.getElementById('cari-kar') ? document.getElementById('cari-kar').value.toLowerCase() : "";
+        let filterK = db_k.filter(x => x.nm.toLowerCase().includes(pencarian) || x.id.toLowerCase().includes(pencarian));
         
-        db_k.forEach(x => { 
-            lk += `<tr>
-                <td><b>${x.nm}</b><br><span style="color:#64748b; font-size:10px;">ID: ${x.id} | ${x.jb}</span></td>
-                <td align="right" style="white-space: nowrap;">
-                    <button class="btn-sm btn-edit" onclick="editK('${x.id}')">✏️ EDIT</button>
-                    <button class="btn-sm btn-danger" onclick="delK('${x.id}')">🗑️ HAPUS</button>
-                </td>
-            </tr>`;
-            opt += `<option value="${x.id}">${x.id} - ${x.nm}</option>`;
+        let lk = "<table>"; let opt = "<option value=''>-- Pilih Karyawan --</option>";
+        filterK.forEach(x => { 
+            lk += `<tr><td><b>${x.nm}</b><br><span style="color:#64748b; font-size:10px;">NIK: ${x.id} | ${x.jb}</span></td><td align="right" style="white-space:nowrap;"><button class="btn-sm btn-edit" onclick="editK('${x.id}')">✏️ Edit</button> <button class="btn-sm btn-danger" onclick="delK('${x.id}')">🗑️</button></td></tr>`;
         });
-        document.getElementById('list-k').innerHTML = lk + "</table>";
+        db_k.forEach(x => { opt += `<option value="${x.id}">${x.id} - ${x.nm}</option>`; });
         
-        // Update Dropdown Karyawan
-        document.getElementById('a-sel').innerHTML = opt; 
-        document.getElementById('p-sel').innerHTML = opt;
+        document.getElementById('list-k').innerHTML = lk + "</table>";
+        document.getElementById('a-sel').innerHTML = opt; document.getElementById('p-sel').innerHTML = opt;
 
-        // Render Riwayat Absen
-        let la = "<table><tr><th>TGL</th><th>NAMA</th><th>STATUS</th><th>AKSI</th></tr>";
+        let la = "<table><tr><th>TGL</th><th>KARYAWAN</th><th>STATUS</th><th>OPSI</th></tr>";
         db_a.slice(-20).reverse().forEach(x => { 
             let k = db_k.find(y => y.id === x.id); 
-            let tglFormat = x.tgl.split('-').reverse().join('/');
-            la += `<tr>
-                <td style="font-size:11px;">${tglFormat}</td>
-                <td style="font-weight:bold;">${k ? k.nm : '<i style="color:red">Terhapus</i>'}</td>
-                <td><span style="font-size:10px; font-weight:bold; padding:2px 6px; border-radius:4px; background:${x.st==='HADIR'?'#dcfce7':(x.st==='ALPA'?'#fee2e2':'#fef3c7')}; color:${x.st==='HADIR'?'#16a34a':(x.st==='ALPA'?'#dc2626':'#d97706')}">${x.st}</span></td>
-                <td><button class="btn-sm btn-danger" onclick="delA('${x.tgl}','${x.id}')">❌</button></td>
-            </tr>`; 
+            let warna = x.st==='HADIR'?'bg-green':(x.st==='ALPA'?'bg-red':'bg-yellow');
+            la += `<tr><td>${x.tgl.slice(8)}/${x.tgl.slice(5,7)}</td><td><b>${k?k.nm:'?'}</b><br><small>${x.lb>0?'+Lembur '+x.lb+'j':''}</small></td><td><span class="badge ${warna}">${x.st}</span></td><td><button class="btn-sm btn-danger" onclick="delA('${x.tgl}','${x.id}')">❌</button></td></tr>`; 
         });
         document.getElementById('list-a').innerHTML = la + "</table>";
     }
 
-    // 8. Navigasi & Utility
-    function buka(id) { 
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
-        document.getElementById('p-'+id).classList.add('active'); 
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
-        event.currentTarget.classList.add('active'); 
-        window.scrollTo(0,0);
-    }
+    function buka(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); event.currentTarget.classList.add('active'); window.scrollTo(0,0);}
+    function resetAll() { if(confirm("PERINGATAN! Seluruh data pegawai dan absensi akan terhapus. Lanjutkan?")) { localStorage.clear(); location.reload(); } }
     
-    function resetAll() { 
-        if(confirm("PERINGATAN KERAS! Anda yakin akan menghapus seluruh data Karyawan dan Absensi secara permanen? Data tidak dapat dikembalikan!")) { 
-            localStorage.clear(); 
-            location.reload(); 
-        } 
-    }
-
-    // Jalankan pertama kali
     render();
 </script>
 </body>
