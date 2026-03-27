@@ -2,11 +2,23 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HRD Master Ultimate</title>
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="HRD Pro">
+    <meta name="apple-mobile-web-app-title" content="HRD Pro">
+    <meta name="theme-color" content="#1e40af">
+    <meta name="msapplication-navbutton-color" content="#1e40af">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👔</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231e40af%22/><text x=%2250%22 y=%2270%22 font-size=%2270%22 text-anchor=%22middle%22 fill=%22white%22>👔</text></svg>">
+
     <style>
         :root { --primary: #1e40af; --dark: #0f172a; --success: #059669; --danger: #dc2626; --warn: #d97706; --bg: #f8fafc; --text: #1e293b; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 80px; font-size: 13px; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-bottom: 80px; font-size: 13px; -webkit-tap-highlight-color: transparent; }
         .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 12px; border: 1px solid #e2e8f0; }
         h3 { margin-top: 0; color: var(--dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 15px; }
         input, select, button, textarea { width: 100%; padding: 9px; margin: 4px 0 10px 0; border-radius: 4px; border: 1px solid #cbd5e1; box-sizing: border-box; font-size: 13px; font-family:inherit; }
@@ -204,70 +216,43 @@
         refreshUI();
     }
 
-    // --- FITUR BARU: EDIT & HAPUS KARYAWAN ---
     function simpanKaryawan() {
         let nik = getVal('k-nik'); let nama = getVal('k-nama');
         if(!nik || !nama) return alert("NIK dan Nama wajib diisi!");
-        
         let obj = {
             id: Date.now(), nik: nik, nama: nama, dept: getVal('k-dept'), jab: getVal('k-jab'), stat: getVal('k-stat'),
             bank: getVal('k-bank'), rek: getVal('k-rek'), bpjs_kes: getVal('k-bpjs-kes'), bpjs_tk: getVal('k-bpjs-tk'),
             gapok: getNum('k-gapok'), tunj: getNum('k-tunj')
         };
-        
         let idx = db_peg.findIndex(x => x.nik === nik);
-        if(idx > -1) { 
-            if(confirm("Yakin ingin mengupdate data karyawan NIK " + nik + "?")) db_peg[idx] = obj; 
-            else return; 
-        } 
+        if(idx > -1) { if(confirm("Yakin ingin mengupdate data karyawan NIK " + nik + "?")) db_peg[idx] = obj; else return; } 
         else { db_peg.push(obj); }
-        
-        localStorage.setItem('hr_peg', JSON.stringify(db_peg));
-        alert("Data Karyawan Tersimpan!"); 
-        batalEditKaryawan(); // Bersihkan form
-        refreshUI();
+        localStorage.setItem('hr_peg', JSON.stringify(db_peg)); alert("Data Karyawan Tersimpan!"); batalEditKaryawan(); refreshUI();
     }
 
     function editKaryawan(nik) {
-        let peg = db_peg.find(x => x.nik === nik);
-        if(!peg) return;
-        
-        // Tarik data ke form atas
+        let peg = db_peg.find(x => x.nik === nik); if(!peg) return;
         setVal('k-nik', peg.nik); document.getElementById('k-nik').readOnly = true; document.getElementById('k-nik').style.background = "#e2e8f0";
-        setVal('k-nama', peg.nama);
-        setVal('k-dept', peg.dept);
-        setVal('k-jab', peg.jab);
-        setVal('k-stat', peg.stat);
-        setVal('k-bank', peg.bank);
-        setVal('k-rek', peg.rek);
-        setVal('k-bpjs-kes', peg.bpjs_kes);
-        setVal('k-bpjs-tk', peg.bpjs_tk);
-        setVal('k-gapok', peg.gapok);
-        setVal('k-tunj', peg.tunj);
-        
-        document.getElementById('btn-batal-edit').style.display = "block";
-        window.scrollTo(0, 0); // Scroll HP ke atas biar kelihatan
+        setVal('k-nama', peg.nama); setVal('k-dept', peg.dept); setVal('k-jab', peg.jab); setVal('k-stat', peg.stat);
+        setVal('k-bank', peg.bank); setVal('k-rek', peg.rek); setVal('k-bpjs-kes', peg.bpjs_kes); setVal('k-bpjs-tk', peg.bpjs_tk);
+        setVal('k-gapok', peg.gapok); setVal('k-tunj', peg.tunj);
+        document.getElementById('btn-batal-edit').style.display = "block"; window.scrollTo(0, 0);
     }
 
     function batalEditKaryawan() {
         document.getElementById('k-nik').readOnly = false; document.getElementById('k-nik').style.background = "#fff";
         ['k-nik','k-nama','k-dept','k-jab','k-bank','k-rek','k-bpjs-kes','k-bpjs-tk'].forEach(id => setVal(id, ''));
-        setVal('k-gapok', 0); setVal('k-tunj', 0); setVal('k-stat', 'Tetap');
-        document.getElementById('btn-batal-edit').style.display = "none";
+        setVal('k-gapok', 0); setVal('k-tunj', 0); setVal('k-stat', 'Tetap'); document.getElementById('btn-batal-edit').style.display = "none";
     }
 
     function hapusKaryawan(id) {
         if(confirm("⚠️ YAKIN INGIN MENGHAPUS KARYAWAN INI?\nData absen dan gaji terkait mungkin akan kehilangan referensi nama!")) {
-            db_peg = db_peg.filter(x => x.id !== id);
-            localStorage.setItem('hr_peg', JSON.stringify(db_peg));
-            refreshUI();
+            db_peg = db_peg.filter(x => x.id !== id); localStorage.setItem('hr_peg', JSON.stringify(db_peg)); refreshUI();
         }
     }
-    // -----------------------------------------
 
     function simpanAbsen() {
-        let id_peg = getVal('a-peg'); let tgl = getVal('a-tgl');
-        if(!id_peg) return alert("Pilih Karyawan!");
+        let id_peg = getVal('a-peg'); let tgl = getVal('a-tgl'); if(!id_peg) return alert("Pilih Karyawan!");
         let obj = { id: Date.now(), id_peg: id_peg, tgl: tgl, stat: getVal('a-stat'), lembur: getNum('a-lembur'), msk: getVal('a-masuk'), klr: getVal('a-keluar') };
         let idx = db_abs.findIndex(x => x.id_peg == id_peg && x.tgl === tgl);
         if(idx > -1) { if(confirm("Absen hari ini sudah ada. Timpa?")) db_abs[idx] = obj; else return; } else { db_abs.push(obj); }
@@ -275,8 +260,7 @@
     }
 
     function tarikDataGaji() {
-        let id_peg = getVal('g-peg'); let per = getVal('g-per'); let peg = db_peg.find(x => x.id == id_peg);
-        if(!peg) return;
+        let id_peg = getVal('g-peg'); let per = getVal('g-per'); let peg = db_peg.find(x => x.id == id_peg); if(!peg) return;
         setVal('g-gapok', peg.gapok); setVal('g-tunj', peg.tunj);
         let rateLembur = 20000;
         let jamLembur = db_abs.filter(x => x.id_peg == id_peg && x.tgl.startsWith(per)).reduce((sum, curr) => sum + parseInt(curr.lembur), 0);
@@ -294,12 +278,7 @@
 
     function simpanPayroll() {
         let id_peg = getVal('g-peg'); let per = getVal('g-per'); if(!id_peg) return alert("Pilih Karyawan!");
-        let obj = {
-            id: Date.now(), id_peg: id_peg, per: per, tgl_cetak: today,
-            pendapatan: { gapok: getNum('g-gapok'), tunj: getNum('g-tunj'), lembur: getNum('g-lembur'), bonus: getNum('g-bonus') },
-            potongan: { kes: getNum('g-pot-kes'), tk: getNum('g-pot-tk'), absen: getNum('g-pot-absen'), kasbon: getNum('g-kasbon') },
-            net: hitungNet()
-        };
+        let obj = { id: Date.now(), id_peg: id_peg, per: per, tgl_cetak: today, pendapatan: { gapok: getNum('g-gapok'), tunj: getNum('g-tunj'), lembur: getNum('g-lembur'), bonus: getNum('g-bonus') }, potongan: { kes: getNum('g-pot-kes'), tk: getNum('g-pot-tk'), absen: getNum('g-pot-absen'), kasbon: getNum('g-kasbon') }, net: hitungNet() };
         let idx = db_pay.findIndex(x => x.id_peg == id_peg && x.per === per);
         if(idx > -1) { if(confirm("Gaji bulan ini sudah diproses. Timpa?")) db_pay[idx] = obj; else return; } else { db_pay.push(obj); }
         localStorage.setItem('hr_pay', JSON.stringify(db_pay)); alert("Payroll Tersimpan!"); refreshUI();
@@ -315,23 +294,15 @@
             <div style="text-align:center; border-bottom:2px solid #000; margin-bottom:15px; padding-bottom:10px;">
                 <h2 style="margin:0;">${pt.toUpperCase()}</h2><p style="margin:0;">SLIP GAJI KARYAWAN | Periode: ${pay.per}</p>
             </div>
-            <table style="width:100%; margin-bottom:15px; border:none; font-size:12px;">
-                <tr><td style="width:100px; border:none;">NIK / Nama</td><td style="border:none;">: <b>${peg.nik} - ${peg.nama}</b></td><td style="width:100px; border:none;">Dept / Jabatan</td><td style="border:none;">: ${peg.dept} / ${peg.jab}</td></tr>
-                <tr><td style="border:none;">Pembayaran via</td><td style="border:none;">: Bank ${peg.bank} (${peg.rek})</td><td style="border:none;">Status</td><td style="border:none;">: ${peg.stat}</td></tr>
-            </table>
+            <table style="width:100%; margin-bottom:15px; border:none; font-size:12px;"><tr><td style="width:100px; border:none;">NIK / Nama</td><td style="border:none;">: <b>${peg.nik} - ${peg.nama}</b></td><td style="width:100px; border:none;">Dept / Jabatan</td><td style="border:none;">: ${peg.dept} / ${peg.jab}</td></tr><tr><td style="border:none;">Pembayaran via</td><td style="border:none;">: Bank ${peg.bank} (${peg.rek})</td><td style="border:none;">Status</td><td style="border:none;">: ${peg.stat}</td></tr></table>
             <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <div style="width:48%; border:1px solid #000; padding:10px;"><h4 style="margin-top:0; border-bottom:1px solid #000;">PENDAPATAN</h4>
-                    <table style="border:none;"><tr><td style="border:none;">Gaji Pokok</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.gapok)}</td></tr><tr><td style="border:none;">Tunj. Tetap</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.tunj)}</td></tr><tr><td style="border:none;">Uang Lembur</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.lembur)}</td></tr><tr><td style="border:none;">Bonus/Lainnya</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.bonus)}</td></tr><tr><td style="border:none; font-weight:bold;">Total Pendapatan</td><td style="border:none; font-weight:bold;" class="text-right">${fRp(totalPen)}</td></tr></table>
-                </div>
-                <div style="width:48%; border:1px solid #000; padding:10px;"><h4 style="margin-top:0; border-bottom:1px solid #000;">POTONGAN</h4>
-                    <table style="border:none;"><tr><td style="border:none;">BPJS Kes/TK</td><td style="border:none;" class="text-right">${fRp(pay.potongan.kes + pay.potongan.tk)}</td></tr><tr><td style="border:none;">Pot. Telat/Alpa</td><td style="border:none;" class="text-right">${fRp(pay.potongan.absen)}</td></tr><tr><td style="border:none;">Kasbon/Lainnya</td><td style="border:none;" class="text-right">${fRp(pay.potongan.kasbon)}</td></tr><tr><td style="border:none;"></td><td style="border:none;"></td></tr><tr><td style="border:none; font-weight:bold;">Total Potongan</td><td style="border:none; font-weight:bold;" class="text-right">${fRp(totalPot)}</td></tr></table>
-                </div>
+                <div style="width:48%; border:1px solid #000; padding:10px;"><h4 style="margin-top:0; border-bottom:1px solid #000;">PENDAPATAN</h4><table style="border:none;"><tr><td style="border:none;">Gaji Pokok</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.gapok)}</td></tr><tr><td style="border:none;">Tunj. Tetap</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.tunj)}</td></tr><tr><td style="border:none;">Uang Lembur</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.lembur)}</td></tr><tr><td style="border:none;">Bonus/Lainnya</td><td style="border:none;" class="text-right">${fRp(pay.pendapatan.bonus)}</td></tr><tr><td style="border:none; font-weight:bold;">Total Pendapatan</td><td style="border:none; font-weight:bold;" class="text-right">${fRp(totalPen)}</td></tr></table></div>
+                <div style="width:48%; border:1px solid #000; padding:10px;"><h4 style="margin-top:0; border-bottom:1px solid #000;">POTONGAN</h4><table style="border:none;"><tr><td style="border:none;">BPJS Kes/TK</td><td style="border:none;" class="text-right">${fRp(pay.potongan.kes + pay.potongan.tk)}</td></tr><tr><td style="border:none;">Pot. Telat/Alpa</td><td style="border:none;" class="text-right">${fRp(pay.potongan.absen)}</td></tr><tr><td style="border:none;">Kasbon/Lainnya</td><td style="border:none;" class="text-right">${fRp(pay.potongan.kasbon)}</td></tr><tr><td style="border:none;"></td><td style="border:none;"></td></tr><tr><td style="border:none; font-weight:bold;">Total Potongan</td><td style="border:none; font-weight:bold;" class="text-right">${fRp(totalPot)}</td></tr></table></div>
             </div>
             <div style="border:2px solid #000; padding:10px; background:#f8fafc; text-align:center;"><h3 style="margin:0;">TAKE HOME PAY : ${fRp(pay.net)}</h3></div>
             <table style="width:100%; border:none; margin-top:30px; text-align:center;"><tr><td style="border:none; width:50%;">Penerima,</td><td style="border:none; width:50%;">HRD & Finance,</td></tr><tr><td style="border:none; height:70px;"></td><td style="border:none;"></td></tr><tr><td style="border:none;">( ${peg.nama} )</td><td style="border:none; font-weight:bold; text-decoration:underline;">( ${bos} )</td></tr></table>
         </div>`;
-        bukaTab('lapor'); document.querySelector('.card.no-print').style.display = 'none';
-        let area = document.getElementById('area-slip'); area.innerHTML = html; area.style.display = 'block';
+        bukaTab('lapor'); document.querySelector('.card.no-print').style.display = 'none'; let area = document.getElementById('area-slip'); area.innerHTML = html; area.style.display = 'block';
         setTimeout(() => { window.print(); document.querySelector('.card.no-print').style.display = 'block'; area.style.display = 'none'; }, 500);
     }
 
@@ -354,28 +325,16 @@
         let pt = localStorage.getItem('hr_pt') || 'NAMA PERUSAHAAN'; let bos = localStorage.getItem('hr_boss') || '';
         document.getElementById('dash-pt').innerText = pt.toUpperCase(); setVal('set-pt', pt === 'NAMA PERUSAHAAN' ? '' : pt); setVal('set-bos', bos);
 
-        let optPeg = "<option value=''>-- Pilih Karyawan --</option>";
-        db_peg.forEach(x => optPeg += `<option value="${x.id}">${x.nik} - ${x.nama}</option>`);
+        let optPeg = "<option value=''>-- Pilih Karyawan --</option>"; db_peg.forEach(x => optPeg += `<option value="${x.id}">${x.nik} - ${x.nama}</option>`);
         document.getElementById('a-peg').innerHTML = optPeg; document.getElementById('g-peg').innerHTML = optPeg;
-        document.getElementById('v-tot-pegawai').innerText = db_peg.length;
-        document.getElementById('v-tot-hadir').innerText = db_abs.filter(x => x.tgl === today && x.stat === 'Hadir').length;
+        document.getElementById('v-tot-pegawai').innerText = db_peg.length; document.getElementById('v-tot-hadir').innerText = db_abs.filter(x => x.tgl === today && x.stat === 'Hadir').length;
 
         let h_abs = "<table><tr><th>Nama</th><th>Status</th><th>Masuk</th><th>Lembur</th></tr>";
         db_abs.filter(x => x.tgl === today).forEach(x => { let p = db_peg.find(y => y.id == x.id_peg); h_abs += `<tr><td>${p?p.nama:'-'}</td><td>${x.stat}</td><td>${x.msk}</td><td>${x.lembur} Jam</td></tr>`; });
         document.getElementById('view-absen-dash').innerHTML = h_abs + "</table>";
 
-        // TAMPILAN TABEL PEGAWAI BARU DENGAN TOMBOL EDIT & HAPUS
         let h_peg = "<table><tr><th>NIK/Nama</th><th>Dept / Gapok</th><th>Aksi</th></tr>";
-        db_peg.forEach(x => { 
-            h_peg += `<tr>
-                <td><b>${x.nik}</b><br>${x.nama}</td>
-                <td>${x.dept}<br><span style="color:green">${fRp(x.gapok)}</span></td>
-                <td>
-                    <button class='btn-main' style='padding:4px 8px; font-size:12px; margin-bottom:4px;' onclick='editKaryawan("${x.nik}")'>✏️</button>
-                    <button class='btn-danger' style='padding:4px 8px; font-size:12px;' onclick='hapusKaryawan(${x.id})'>🗑️</button>
-                </td>
-            </tr>`; 
-        });
+        db_peg.forEach(x => { h_peg += `<tr><td><b>${x.nik}</b><br>${x.nama}</td><td>${x.dept}<br><span style="color:green">${fRp(x.gapok)}</span></td><td><button class='btn-main' style='padding:4px 8px; font-size:12px; margin-bottom:4px;' onclick='editKaryawan("${x.nik}")'>✏️</button><button class='btn-danger' style='padding:4px 8px; font-size:12px;' onclick='hapusKaryawan(${x.id})'>🗑️</button></td></tr>`; });
         document.getElementById('view-pegawai').innerHTML = h_peg + "</table>";
 
         let h_gaji = "<table><tr><th>Bulan</th><th>Karyawan</th><th>THP</th><th>Aksi</th></tr>";
@@ -383,11 +342,7 @@
         document.getElementById('view-gaji').innerHTML = h_gaji + "</table>";
     }
 
-    function bukaTab(id) {
-        document.querySelectorAll('.page, .nav-item').forEach(e => e.classList.remove('active'));
-        document.getElementById('p-'+id).classList.add('active');
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(n => { if(n.getAttribute('onclick').includes(id)) n.classList.add('active'); });
-    }
+    function bukaTab(id) { document.querySelectorAll('.page, .nav-item').forEach(e => e.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.bottom-nav .nav-item').forEach(n => { if(n.getAttribute('onclick').includes(id)) n.classList.add('active'); }); }
     refreshUI();
 </script>
 </body>
