@@ -11,6 +11,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="HRD Pro">
     
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
     <style>
         :root { --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --danger: #dc2626; --warn: #d97706; --bg: #f1f5f9; --text: #334155; }
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -187,18 +190,9 @@
     </div>
     
     <div class="card" style="border-top: 3px solid var(--success);">
-        <h3 style="color:var(--success)">💾 DATABASE MANAGEMENT</h3>
-        <p style="font-size:11px; color:#64748b;">Backup data Anda secara berkala untuk mencegah kehilangan data jika aplikasi direset.</p>
-        <div class="grid">
-            <button class="btn-success" onclick="exportData()">⬇️ BACKUP DATA (.json)</button>
-            <button class="btn-warn" onclick="document.getElementById('import-file').click()">⬆️ RESTORE DATA</button>
-            <input type="file" id="import-file" style="display:none;" accept=".json" onchange="importData(event)">
-        </div>
-    </div>
-
-    <div class="card" style="border-top: 3px solid var(--danger);">
-        <h3 style="color:var(--danger)">⚠️ ZONA BERBAHAYA</h3>
-        <button class="btn-danger" style="padding:15px;" onclick="resetAll()">🗑️ HAPUS SELURUH DATA SISTEM PERMANEN</button>
+        <h3 style="color:var(--success)">💾 STATUS CLOUD DATABASE</h3>
+        <p style="font-size:11px; color:#64748b; font-weight:bold;">🟢 Terhubung ke Firebase Server</p>
+        <p style="font-size:11px; color:#64748b;">Data Anda kini otomatis tersimpan di cloud secara real-time. Tidak perlu khawatir kehilangan data.</p>
     </div>
 </div>
 
@@ -211,26 +205,41 @@
 </nav>
 
 <script>
-    let deferredPrompt;
+    const firebaseConfig = {
+      apiKey: "AIzaSyDqjFQkxC8ukQjHiWLE_uQHmdruBdWuybQ",
+      authDomain: "control-center-ddb1e.firebaseapp.com",
+      projectId: "control-center-ddb1e",
+      appId: "1:103514968036:web:d9018e404479fbb2b5c1f1"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').then(reg => console.log('PWA SW Registered')).catch(err => console.log('SW Error', err));
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Error', err));
       });
     }
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault(); deferredPrompt = e;
-      const btn = document.getElementById('btn-install');
-      btn.style.display = 'inline-block';
-      btn.addEventListener('click', () => {
-        btn.style.display = 'none'; deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((res) => { deferredPrompt = null; });
-      });
+    let db_k = [];
+    let db_a = [];
+    let PT = "NAMA PERUSAHAAN";
+
+    db.collection("hrd_karyawan").onSnapshot((snapshot) => {
+        db_k = [];
+        snapshot.forEach((doc) => { db_k.push(doc.data()); });
+        render();
     });
 
-    let db_k = JSON.parse(localStorage.getItem('hr_kar')) || [];
-    let db_a = JSON.parse(localStorage.getItem('hr_absen')) || [];
-    let PT = localStorage.getItem('hr_pt') || "NAMA PERUSAHAAN";
+    db.collection("hrd_absensi").orderBy("tgl", "desc").onSnapshot((snapshot) => {
+        db_a = [];
+        snapshot.forEach((doc) => { db_a.push(doc.data()); });
+        render();
+    });
+
+    db.collection("hrd_settings").doc("perusahaan").onSnapshot((doc) => {
+        if(doc.exists) { PT = doc.data().nama; render(); }
+    });
 
     let t_now = new Date();
     let hariIni = new Date(t_now.getTime() - (t_now.getTimezoneOffset() * 60000)).toISOString().slice(0,10);
@@ -241,33 +250,10 @@
 
     function saveS() { 
         let ptName = document.getElementById('s-pt').value;
-        if(ptName) { localStorage.setItem('hr_pt', ptName); alert("Nama Perusahaan Diperbarui!"); location.reload(); }
-    }
-
-    function exportData() {
-        let backup = { hr_kar: db_k, hr_absen: db_a, hr_pt: PT };
-        let blob = new Blob([JSON.stringify(backup)], {type: "application/json"});
-        let url = URL.createObjectURL(blob);
-        let a = document.createElement('a');
-        a.href = url; a.download = `Backup_HRD_${hariIni}.json`; a.click();
-    }
-
-    function importData(event) {
-        let file = event.target.files[0];
-        if(!file) return;
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                let data = JSON.parse(e.target.result);
-                if(data.hr_kar && data.hr_absen) {
-                    localStorage.setItem('hr_kar', JSON.stringify(data.hr_kar));
-                    localStorage.setItem('hr_absen', JSON.stringify(data.hr_absen));
-                    if(data.hr_pt) localStorage.setItem('hr_pt', data.hr_pt);
-                    alert("Restore Database Berhasil!"); location.reload();
-                } else { alert("File JSON tidak valid!"); }
-            } catch(err) { alert("Error membaca file!"); }
-        };
-        reader.readAsText(file);
+        if(ptName) { 
+            db.collection("hrd_settings").doc("perusahaan").set({ nama: ptName });
+            alert("Nama Perusahaan Diperbarui!"); 
+        }
     }
 
     function saveK() {
@@ -282,11 +268,9 @@
             bpjs: parseInt(document.getElementById('k-bpjs').value) || 0
         };
         
-        let idx = db_k.findIndex(x => x.id === id);
-        if(idx > -1) db_k[idx] = d; else db_k.push(d);
-        
-        localStorage.setItem('hr_kar', JSON.stringify(db_k));
-        resK(); render(); alert("Data Karyawan Disimpan!");
+        db.collection("hrd_karyawan").doc(id).set(d).then(() => {
+            resK(); alert("Data Karyawan Tersimpan!");
+        });
     }
 
     function editK(id) {
@@ -311,17 +295,22 @@
         document.getElementById('f-title').innerHTML = "📝 INPUT / EDIT PEGAWAI"; document.getElementById('btn-save').innerHTML = "💾 SIMPAN DATA KARYAWAN"; document.getElementById('btn-cancel').style.display = "none";
     }
 
-    function delK(id) { if(confirm("Hapus Permanen Karyawan Ini?")) { db_k = db_k.filter(x => x.id !== id); localStorage.setItem('hr_kar', JSON.stringify(db_k)); render(); } }
-
-    function saveA() {
-        let id = document.getElementById('a-sel').value; let tgl = document.getElementById('a-tgl').value;
-        if(!id) return alert("Pilih Karyawan!");
-        db_a = db_a.filter(x => !(x.tgl === tgl && x.id === id));
-        db_a.push({ tgl: tgl, id: id, st: document.getElementById('a-st').value, lb: parseInt(document.getElementById('a-lb').value) || 0 });
-        localStorage.setItem('hr_absen', JSON.stringify(db_a)); render(); alert("Absen Tercatat!");
+    function delK(id) { 
+        if(confirm("Hapus Permanen dari Server?")) { db.collection("hrd_karyawan").doc(id).delete(); } 
     }
 
-    function delA(tgl, id) { if(confirm("Hapus Riwayat Absen?")) { db_a = db_a.filter(x => !(x.tgl === tgl && x.id === id)); localStorage.setItem('hr_absen', JSON.stringify(db_a)); render(); } }
+    function saveA() {
+        let id = document.getElementById('a-sel').value; 
+        let tgl = document.getElementById('a-tgl').value;
+        if(!id) return alert("Pilih Karyawan!");
+        let docId = id + "_" + tgl;
+        db.collection("hrd_absensi").doc(docId).set({ tgl: tgl, id: id, st: document.getElementById('a-st').value, lb: parseInt(document.getElementById('a-lb').value) || 0 }).then(() => alert("Absen Tersimpan!"));
+    }
+
+    function delA(tgl, id) { 
+        let docId = id + "_" + tgl;
+        if(confirm("Hapus Riwayat Absen?")) { db.collection("hrd_absensi").doc(docId).delete(); } 
+    }
 
     function getSlip() {
         let id = document.getElementById('p-sel').value; let bln = document.getElementById('p-bln').value;
@@ -339,11 +328,7 @@
         let totGP = (tipeGP === 'bulanan') ? k.gp : (h * k.gp);
         let labelGP = (tipeGP === 'bulanan') ? 'Gaji Pokok (Bln)' : `Gaji Pokok (${h}x)`;
         
-        // LOGIKA BARU: Potong gaji kalau ALPA khusus bulanan (Asumsi pembagi 26 hari kerja)
-        let potAlpa = 0;
-        if(tipeGP === 'bulanan' && a > 0) {
-            potAlpa = Math.floor(k.gp / 26) * a;
-        }
+        let potAlpa = (tipeGP === 'bulanan' && a > 0) ? Math.floor(k.gp / 26) * a : 0;
         
         let totUM = h * k.um; let totUT = h * k.ut; let totLbr = jamLbr * k.ul;
         let totPendapatan = totGP + totUM + totUT + totLbr;
@@ -398,7 +383,9 @@
                         <td>
                             <table style="border:none; width:100%;">
                                 <tr><td style="border:none; padding:3px;">BPJS / Asuransi</td><td style="border:none; padding:3px; text-align:right;">Rp ${bpjs.toLocaleString()}</td></tr>
-                                <tr><td style="border:none; padding:3px;">Kasbon / Pinjaman</td><td style="border:none; padding:3px; text-align:right;">Rp ${kasbon.toLocaleString()}</td></tr>
+                                
+                                ${kasbon > 0 ? `<tr><td style="border:none; padding:3px;">Pinjaman / Kasbon</td><td style="border:none; padding:3px; text-align:right;">Rp ${kasbon.toLocaleString()}</td></tr>` : ''}
+                                
                                 ${potAlpa > 0 ? `<tr><td style="border:none; padding:3px; color:var(--danger); font-weight:bold;">Alpa Mangkir (${a}x)</td><td style="border:none; padding:3px; text-align:right; color:var(--danger); font-weight:bold;">Rp ${potAlpa.toLocaleString()}</td></tr>` : ''}
                             </table>
                             <br><br><br>
@@ -431,20 +418,13 @@
             let h = abs.filter(x => x.st === "HADIR").length;
             let a = abs.filter(x => x.st === "ALPA").length;
             let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0);
-            
             let tipeGP = k.tipe_gp || 'harian';
             let totGP = (tipeGP === 'bulanan') ? k.gp : (h * k.gp);
-            
-            let potAlpa = 0;
-            if(tipeGP === 'bulanan' && a > 0) {
-                potAlpa = Math.floor(k.gp / 26) * a;
-            }
-            
+            let potAlpa = (tipeGP === 'bulanan' && a > 0) ? Math.floor(k.gp / 26) * a : 0;
             let pndp = totGP + (h * k.um) + (h * k.ut) + (jamLbr * k.ul);
             let pot = (k.bpjs || 0) + potAlpa; 
             let thp = pndp - pot;
             grandTHP += thp;
-            
             if(h > 0 || pot > 0 || tipeGP === 'bulanan') { 
                 html += `<tr><td style="text-align:left;"><b>${k.nm}</b></td><td style="text-align:center;">${h}</td><td>Rp ${pndp.toLocaleString()}</td><td>Rp ${pot.toLocaleString()}</td><td><b>Rp ${thp.toLocaleString()}</b></td></tr>`;
             }
@@ -459,22 +439,18 @@
         document.getElementById('v-tgl').innerText = t_now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         document.getElementById('t-k').innerText = db_k.length;
         document.getElementById('t-h').innerText = db_a.filter(x => x.tgl === hariIni && x.st === "HADIR").length;
-        
         let pencarian = document.getElementById('cari-kar') ? document.getElementById('cari-kar').value.toLowerCase() : "";
         let filterK = db_k.filter(x => x.nm.toLowerCase().includes(pencarian) || x.id.toLowerCase().includes(pencarian));
-        
         let lk = "<table>"; let opt = "<option value=''>-- Pilih Karyawan --</option>";
         filterK.forEach(x => { 
             let tipe = x.tipe_gp === 'bulanan' ? 'Bulan' : 'Hari'; 
             lk += `<tr><td><b>${x.nm}</b><br><span style="color:#64748b; font-size:10px;">NIK: ${x.id} | GP: Rp${(x.gp || 0).toLocaleString()}/${tipe}</span></td><td align="right" style="white-space:nowrap;"><button class="btn-sm btn-edit" onclick="editK('${x.id}')">✏️ Edit</button> <button class="btn-sm btn-danger" onclick="delK('${x.id}')">🗑️</button></td></tr>`;
         });
         db_k.forEach(x => { opt += `<option value="${x.id}">${x.id} - ${x.nm}</option>`; });
-        
         document.getElementById('list-k').innerHTML = lk + "</table>";
         document.getElementById('a-sel').innerHTML = opt; document.getElementById('p-sel').innerHTML = opt;
-
         let la = "<table><tr><th>TGL</th><th>KARYAWAN</th><th>STATUS</th><th>OPSI</th></tr>";
-        db_a.slice(-20).reverse().forEach(x => { 
+        db_a.slice(0, 20).forEach(x => { 
             let k = db_k.find(y => y.id === x.id); 
             let warna = x.st==='HADIR'?'bg-green':(x.st==='ALPA'?'bg-red':'bg-yellow');
             la += `<tr><td>${x.tgl.slice(8)}/${x.tgl.slice(5,7)}</td><td><b>${k?k.nm:'?'}</b><br><small>${x.lb>0?'+Lembur '+x.lb+'j':''}</small></td><td><span class="badge ${warna}">${x.st}</span></td><td><button class="btn-sm btn-danger" onclick="delA('${x.tgl}','${x.id}')">❌</button></td></tr>`; 
@@ -483,8 +459,6 @@
     }
 
     function buka(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); event.currentTarget.classList.add('active'); window.scrollTo(0,0);}
-    function resetAll() { if(confirm("PERINGATAN! Seluruh data pegawai dan absensi akan terhapus. Lanjutkan?")) { localStorage.clear(); location.reload(); } }
-    
     render();
 </script>
 </body>
