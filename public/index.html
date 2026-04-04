@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HRD Master Pro - Ultimate HRIS</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HRD Pro">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root { --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --danger: #dc2626; --warn: #d97706; --bg: #f1f5f9; --text: #334155; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); margin: 0; padding: 12px; padding-bottom: 80px; font-size: 13px; }
+        .card { background: white; padding: 16px; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 16px; border: 1px solid #e2e8f0; }
+        h3 { margin: 0 0 15px 0; color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 14px; text-transform: uppercase; font-weight: bold; display: flex; justify-content: space-between; align-items: center;}
+        input, select, button { width: 100%; padding: 10px 12px; margin: 5px 0 12px 0; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; transition: 0.2s; }
+        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .btn-main { background: var(--accent); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .btn-main:hover { background: #1d4ed8; }
+        .btn-success { background: var(--success); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .btn-danger { background: var(--danger); color: white; border: none; cursor: pointer; }
+        .btn-warn { background: var(--warn); color: white; border: none; cursor: pointer; }
+        .btn-sm { padding: 5px 8px; font-size: 11px; margin: 0 2px 0 0; width: auto; border-radius: 4px; display: inline-block;}
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 5px; }
+        th, td { padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: middle; }
+        th { background: #f8fafc; font-weight: bold; color: var(--primary); text-transform: uppercase; }
+        .badge { padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .bg-green { background: #dcfce7; color: #16a34a; } .bg-red { background: #fee2e2; color: #dc2626; } .bg-yellow { background: #fef3c7; color: #d97706; }
+        
+        .page { display: none; animation: fadeIn 0.3s ease; } .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0; z-index: 1000; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); }
+        .nav-item { border: none; background: none; font-size: 10px; color: #64748b; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; font-weight: 600; margin:0; padding:0;}
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 20px; margin-bottom: 2px; }
+        .scrollable { max-height: 400px; overflow-y: auto; }
+        label { font-size: 11px; font-weight: 600; color: #475569; margin-bottom: -3px; display: block; }
+
+        /* SLIP GAJI PRINT LAYOUT */
+        .slip-box { font-family: 'Courier New', Courier, monospace; color: #000; font-size: 12px; line-height: 1.4; border: 2px solid #000; padding: 20px; background: white; }
+        .slip-header { text-align: center; border-bottom: 3px double #000; margin-bottom: 15px; padding-bottom: 10px; }
+        .slip-title { font-size: 20px; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .slip-info { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px dashed #000; padding-bottom: 10px; }
+        .slip-table { width: 100%; border-collapse: collapse; border: 1px solid #000; margin-bottom: 15px; }
+        .slip-table th, .slip-table td { border: 1px solid #000; padding: 6px 10px; vertical-align: top; }
+        .slip-table th { background: #f1f5f9 !important; text-align: center; font-weight: bold; -webkit-print-color-adjust: exact; }
+        .slip-total { border: 2px solid #000; padding: 12px; font-size: 15px; font-weight: bold; text-align: center; margin-bottom: 25px; background: #e2e8f0; -webkit-print-color-adjust: exact; }
+        .ttd-area { display: flex; justify-content: space-between; text-align: center; margin-top: 10px; }
+        
+        @media print { 
+            body { background: white; padding: 0; margin: 0; }
+            .no-print { display: none !important; } 
+            .card { border: none; box-shadow: none; margin: 0; padding: 0; } 
+            .slip-box { border: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="p-home" class="page active">
+    <div class="card" style="background: linear-gradient(135deg, var(--primary), #1e293b); color:white; border:none; text-align:center; padding: 25px 15px;">
+        <h2 id="v-pt" style="margin:0; font-size: 22px; letter-spacing: 1px;">HRD MASTER PRO</h2>
+        <p id="v-tgl" style="margin:5px 0 0 0; opacity:0.8; font-size:12px;"></p>
+        <button id="btn-install" class="btn-success no-print" style="display:none; margin-top:15px; width:auto; padding:8px 15px;">📱 INSTALL APLIKASI</button>
+    </div>
+    <div class="grid">
+        <div class="card" style="text-align:center; padding: 20px 10px; border-top: 4px solid var(--primary);">
+            <div style="font-size:11px; color:#64748b; font-weight:bold;">TOTAL PEGAWAI</div>
+            <h1 id="t-k" style="margin:5px 0 0 0; color:var(--primary); font-size:36px;">0</h1>
+        </div>
+        <div class="card" style="text-align:center; padding: 20px 10px; border-top: 4px solid var(--success);">
+            <div style="font-size:11px; color:#64748b; font-weight:bold;">HADIR HARI INI</div>
+            <h1 id="t-h" style="margin:5px 0 0 0; color:var(--success); font-size:36px;">0</h1>
+        </div>
+    </div>
+</div>
+
+<div id="p-kar" class="page">
+    <div class="card">
+        <h3 id="f-title">📝 INPUT / EDIT PEGAWAI</h3>
+        <div class="grid">
+            <div><label>ID / NIK KARYAWAN</label><input type="text" id="k-id" placeholder="Cth: K-001" style="text-transform:uppercase; font-weight:bold;"></div>
+            <div><label>NAMA LENGKAP</label><input type="text" id="k-nm" placeholder="Nama Karyawan"></div>
+        </div>
+        <label>JABATAN / DIVISI</label><input type="text" id="k-jb" placeholder="Cth: Staff Gudang">
+        
+        <div style="background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:12px;">
+            <p style="margin:0 0 10px 0; font-size:12px; font-weight:bold; border-bottom:1px solid #cbd5e1; padding-bottom:5px;">Rincian Kompensasi & Potongan Tetap</p>
+            <div class="grid">
+                <div>
+                    <label>TIPE GAJI POKOK</label>
+                    <select id="k-tipe-gp">
+                        <option value="harian">HARIAN</option>
+                        <option value="bulanan">BULANAN</option>
+                    </select>
+                </div>
+                <div><label>NOMINAL GAJI POKOK</label><input type="number" id="k-gp" value="0"></div>
+                <div><label>UANG MAKAN (Harian)</label><input type="number" id="k-um" value="0"></div>
+                <div><label>UANG TRANSPORT (Harian)</label><input type="number" id="k-ut" value="0"></div>
+                <div><label>TARIF LEMBUR (Per Jam)</label><input type="number" id="k-ul" value="0"></div>
+                <div style="grid-column: span 1;"><label style="color:var(--danger)">POTONGAN BPJS (Bulan)</label><input type="number" id="k-bpjs" value="0" placeholder="Biarkan 0 jika tidak ada"></div>
+            </div>
+        </div>
+        
+        <button id="btn-save" class="btn-main" onclick="saveK()">💾 SIMPAN DATA KARYAWAN</button>
+        <button id="btn-cancel" class="btn-danger" style="display:none;" onclick="resK()">❌ BATAL EDIT</button>
+    </div>
+    <div class="card">
+        <h3>📋 MASTER DATA PEGAWAI</h3>
+        <input type="text" id="cari-kar" placeholder="🔍 Cari Nama / NIK Karyawan..." onkeyup="render()">
+        <div class="scrollable" id="list-k"></div>
+    </div>
+</div>
+
+<div id="p-abs" class="page">
+    <div class="card">
+        <h3>⏱️ CATAT KEHADIRAN HARIAN</h3>
+        <div class="grid">
+            <div><label>TANGGAL</label><input type="date" id="a-tgl"></div>
+            <div><label>PILIH KARYAWAN</label><select id="a-sel"></select></div>
+        </div>
+        <div class="grid">
+            <div>
+                <label>STATUS</label>
+                <select id="a-st">
+                    <option value="HADIR">HADIR</option>
+                    <option value="SAKIT">SAKIT</option>
+                    <option value="IZIN">IZIN</option>
+                    <option value="ALPA">ALPA (Tanpa Keterangan)</option>
+                </select>
+            </div>
+            <div><label>JAM LEMBUR</label><input type="number" id="a-lb" value="0" placeholder="0"></div>
+        </div>
+        <button class="btn-main" onclick="saveA()">⚡ SUBMIT ABSENSI</button>
+    </div>
+    <div class="card">
+        <h3>🕒 LOG ABSENSI TERAKHIR</h3>
+        <div class="scrollable" id="list-a"></div>
+    </div>
+</div>
+
+<div id="p-pay" class="page">
+    <div class="card no-print">
+        <h3>💰 SISTEM PAYROLL & SLIP GAJI</h3>
+        <div class="grid">
+            <div><label>PERIODE BULAN</label><input type="month" id="p-bln" onchange="generateRekap()"></div>
+            <div><label>PILIH KARYAWAN</label><select id="p-sel"></select></div>
+        </div>
+        <div style="background:#fff7ed; padding:10px; border-radius:6px; border:1px solid #fdba74; margin-bottom:12px;">
+            <label style="color:#c2410c;">POTONGAN KASBON BULAN INI (Dinamis)</label>
+            <input type="number" id="p-kasbon" value="0" placeholder="Isi jika ada pinjaman/kasbon">
+        </div>
+        <div class="grid">
+            <button class="btn-main" onclick="getSlip()">📄 CETAK SLIP GAJI</button>
+            <button class="btn-warn" onclick="buka('rekap'); generateRekap();">📊 LIHAT REKAP MASTER</button>
+        </div>
+    </div>
+    
+    <div id="v-slip" class="card" style="display:none; padding:5px;"></div>
+</div>
+
+<div id="p-rekap" class="page">
+    <div class="card no-print">
+        <h3 style="color:var(--warn)">📊 REKAP GAJI KESELURUHAN</h3>
+        <p style="font-size:11px; color:#64748b; margin-top:-10px;">Laporan total gaji yang harus dibayarkan perusahaan pada periode terpilih.</p>
+        <button class="btn-danger" style="margin-bottom:10px;" onclick="buka('pay')">⬅️ KEMBALI KE PAYROLL</button>
+        <div style="overflow-x:auto;">
+            <table id="tabel-rekap" border="1" style="width:100%; border-collapse:collapse; text-align:right;">
+                </table>
+        </div>
+    </div>
+</div>
+
+<div id="p-set" class="page">
+    <div class="card">
+        <h3>⚙️ PENGATURAN PERUSAHAAN</h3>
+        <label>NAMA PERUSAHAAN / TOKO (Untuk Header Slip)</label>
+        <input type="text" id="s-pt" placeholder="PT. MAJU MUNDUR">
+        <button class="btn-main" onclick="saveS()">🔄 SIMPAN NAMA</button>
+    </div>
+    
+    <div class="card" style="border-top: 3px solid var(--success);">
+        <h3 style="color:var(--success)">💾 STATUS CLOUD DATABASE</h3>
+        <p style="font-size:11px; color:#64748b; font-weight:bold;">🟢 Terhubung ke Firebase Server</p>
+        <p style="font-size:11px; color:#64748b;">Data Anda kini otomatis tersimpan di cloud secara real-time. Tidak perlu khawatir kehilangan data.</p>
+    </div>
+</div>
+
+<nav class="bottom-nav no-print">
+    <div class="nav-item active" onclick="buka('home')"><div class="nav-icon">📊</div>DASHBOARD</div>
+    <div class="nav-item" onclick="buka('kar')"><div class="nav-icon">👥</div>PEGAWAI</div>
+    <div class="nav-item" onclick="buka('abs')"><div class="nav-icon">📝</div>ABSENSI</div>
+    <div class="nav-item" onclick="buka('pay')"><div class="nav-icon">💰</div>PAYROLL</div>
+    <div class="nav-item" onclick="buka('set')"><div class="nav-icon">⚙️</div>SETING</div>
+</nav>
+
+<script>
+    // --- KONFIGURASI FIREBASE (GANTI PAKAI PUNYA LU NANTI BOS!) ---
+    const firebaseConfig = {
+      apiKey: "GANTI_DENGAN_API_KEY",
+      authDomain: "GANTI_DENGAN_PROJECT_ID.firebaseapp.com",
+      projectId: "GANTI_DENGAN_PROJECT_ID",
+      storageBucket: "GANTI_DENGAN_PROJECT_ID.appspot.com",
+      messagingSenderId: "GANTI_DENGAN_SENDER_ID",
+      appId: "GANTI_DENGAN_APP_ID"
+    };
+    
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // --- PWA REGISTRATION ---
+    let deferredPrompt;
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Error', err));
+      });
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); deferredPrompt = e;
+      const btn = document.getElementById('btn-install');
+      btn.style.display = 'inline-block';
+      btn.addEventListener('click', () => {
+        btn.style.display = 'none'; deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((res) => { deferredPrompt = null; });
+      });
+    });
+
+    // --- 1. VARIABEL DATABASE ---
+    let db_k = [];
+    let db_a = [];
+    let PT = "NAMA PERUSAHAAN";
+
+    // --- 2. SINKRONISASI REALTIME KE FIREBASE ---
+    db.collection("karyawan").onSnapshot((snapshot) => {
+        db_k = [];
+        snapshot.forEach((doc) => { db_k.push(doc.data()); });
+        render();
+    });
+
+    db.collection("absensi").orderBy("tgl", "desc").onSnapshot((snapshot) => {
+        db_a = [];
+        snapshot.forEach((doc) => { db_a.push(doc.data()); });
+        render();
+    });
+
+    db.collection("settings").doc("perusahaan").onSnapshot((doc) => {
+        if(doc.exists) { PT = doc.data().nama; render(); }
+    });
+
+    // --- KUNCI TANGGAL ---
+    let t_now = new Date();
+    let hariIni = new Date(t_now.getTime() - (t_now.getTimezoneOffset() * 60000)).toISOString().slice(0,10);
+    
+    document.getElementById('a-tgl').value = hariIni;
+    document.getElementById('a-tgl').setAttribute('max', hariIni);
+    document.getElementById('p-bln').value = hariIni.slice(0,7);
+
+    // --- 3. FUNGSI PENGATURAN ---
+    function saveS() { 
+        let ptName = document.getElementById('s-pt').value;
+        if(ptName) { 
+            db.collection("settings").doc("perusahaan").set({ nama: ptName });
+            alert("Nama Perusahaan Diperbarui di Server!"); 
+        }
+    }
+
+    // --- 4. FUNGSI PEGAWAI (CRUD) ---
+    function saveK() {
+        let id = document.getElementById('k-id').value.trim().toUpperCase();
+        if(!id || !document.getElementById('k-nm').value) return alert("NAMA dan ID/NIK Wajib Diisi!");
+        
+        let d = { 
+            id: id, nm: document.getElementById('k-nm').value, jb: document.getElementById('k-jb').value, 
+            tipe_gp: document.getElementById('k-tipe-gp').value, // Simpan tipe gaji
+            gp: parseInt(document.getElementById('k-gp').value) || 0, um: parseInt(document.getElementById('k-um').value) || 0, 
+            ut: parseInt(document.getElementById('k-ut').value) || 0, ul: parseInt(document.getElementById('k-ul').value) || 0,
+            bpjs: parseInt(document.getElementById('k-bpjs').value) || 0
+        };
+        
+        db.collection("karyawan").doc(id).set(d).then(() => {
+            resK(); alert("Data Karyawan Tersimpan di Cloud!");
+        }).catch(err => alert("Gagal Simpan: " + err.message));
+    }
+
+    function editK(id) {
+        let x = db_k.find(y => y.id === id);
+        if(!x) return;
+        document.getElementById('k-id').value = x.id; document.getElementById('k-id').readOnly = true; document.getElementById('k-id').style.background = "#e2e8f0";
+        document.getElementById('k-nm').value = x.nm; document.getElementById('k-jb').value = x.jb;
+        document.getElementById('k-tipe-gp').value = x.tipe_gp || 'harian'; // Load tipe gaji
+        document.getElementById('k-gp').value = x.gp; document.getElementById('k-um').value = x.um;
+        document.getElementById('k-ut').value = x.ut; document.getElementById('k-ul').value = x.ul;
+        document.getElementById('k-bpjs').value = x.bpjs || 0;
+        
+        document.getElementById('f-title').innerHTML = "✏️ EDIT DATA PEGAWAI"; document.getElementById('btn-save').innerHTML = "🔄 UPDATE DATA"; document.getElementById('btn-cancel').style.display = "block";
+        window.scrollTo(0,0);
+    }
+
+    function resK() {
+        document.getElementById('k-id').value = ""; document.getElementById('k-id').readOnly = false; document.getElementById('k-id').style.background = "white";
+        document.getElementById('k-nm').value = ""; document.getElementById('k-jb').value = "";
+        document.getElementById('k-tipe-gp').value = "harian"; // Reset ke default
+        document.getElementById('k-gp').value = 0; document.getElementById('k-um').value = 0; document.getElementById('k-ut').value = 0; document.getElementById('k-ul').value = 0; document.getElementById('k-bpjs').value = 0;
+        document.getElementById('f-title').innerHTML = "📝 INPUT / EDIT PEGAWAI"; document.getElementById('btn-save').innerHTML = "💾 SIMPAN DATA KARYAWAN"; document.getElementById('btn-cancel').style.display = "none";
+    }
+
+    function delK(id) { 
+        if(confirm("Hapus Permanen Karyawan Ini dari Server?")) { 
+            db.collection("karyawan").doc(id).delete(); 
+        } 
+    }
+
+    // --- 5. FUNGSI ABSENSI ---
+    function saveA() {
+        let id = document.getElementById('a-sel').value; 
+        let tgl = document.getElementById('a-tgl').value;
+        if(!id) return alert("Pilih Karyawan!");
+        
+        let docId = id + "_" + tgl; 
+        
+        db.collection("absensi").doc(docId).set({ 
+            tgl: tgl, 
+            id: id, 
+            st: document.getElementById('a-st').value, 
+            lb: parseInt(document.getElementById('a-lb').value) || 0 
+        }).then(() => {
+            alert("Absen Tersimpan di Cloud!");
+        });
+    }
+
+    function delA(tgl, id) { 
+        let docId = id + "_" + tgl;
+        if(confirm("Hapus Riwayat Absen dari Server?")) { 
+            db.collection("absensi").doc(docId).delete();
+        } 
+    }
+
+    // --- 6. FUNGSI PAYROLL & CETAK SLIP ---
+    function getSlip() {
+        let id = document.getElementById('p-sel').value; let bln = document.getElementById('p-bln').value;
+        if(!id) return alert("Pilih Karyawan!");
+        
+        let k = db_k.find(x => x.id === id); 
+        let abs = db_a.filter(x => x.id === id && x.tgl.startsWith(bln));
+        
+        let h = abs.filter(x => x.st === "HADIR").length; let s = abs.filter(x => x.st === "SAKIT").length;
+        let i = abs.filter(x => x.st === "IZIN").length; let a = abs.filter(x => x.st === "ALPA").length;
+        let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0);
+        let kasbon = parseInt(document.getElementById('p-kasbon').value) || 0;
+        
+        // Logika Tipe Gaji
+        let tipeGP = k.tipe_gp || 'harian';
+        let totGP = (tipeGP === 'bulanan') ? k.gp : (h * k.gp);
+        let labelGP = (tipeGP === 'bulanan') ? 'Gaji Pokok (Bln)' : `Gaji Pokok (${h}x)`;
+        
+        let totUM = h * k.um; let totUT = h * k.ut; let totLbr = jamLbr * k.ul;
+        let totPendapatan = totGP + totUM + totUT + totLbr;
+        
+        let bpjs = k.bpjs || 0; let totPotongan = bpjs + kasbon; 
+        let thp = totPendapatan - totPotongan;
+
+        let nmBln = new Date(bln + "-01").toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+
+        document.getElementById('v-slip').innerHTML = `
+            <div class="slip-box">
+                <div class="slip-header">
+                    <h2 class="slip-title">${PT}</h2>
+                    <div>SLIP GAJI KARYAWAN</div>
+                </div>
+                
+                <div class="slip-info">
+                    <div>
+                        <table style="border:none; margin:0;">
+                            <tr><td style="border:none; padding:2px;"><b>N I K</b></td><td style="border:none; padding:2px;">: ${k.id}</td></tr>
+                            <tr><td style="border:none; padding:2px;"><b>Nama</b></td><td style="border:none; padding:2px;">: ${k.nm}</td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <table style="border:none; margin:0;">
+                            <tr><td style="border:none; padding:2px;"><b>Jabatan</b></td><td style="border:none; padding:2px;">: ${k.jb}</td></tr>
+                            <tr><td style="border:none; padding:2px;"><b>Periode</b></td><td style="border:none; padding:2px;">: ${nmBln}</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div style="font-size:11px; margin-bottom:10px; border:1px solid #000; padding:5px; text-align:center;">
+                    <b>KEHADIRAN:</b> Hadir: ${h} Hari | Sakit: ${s} | Izin: ${i} | Alpa: ${a} | Lembur: ${jamLbr} Jam
+                </div>
+
+                <table class="slip-table">
+                    <tr><th width="50%">PENERIMAAN</th><th width="50%">POTONGAN</th></tr>
+                    <tr>
+                        <td>
+                            <table style="border:none; width:100%;">
+                                <tr><td style="border:none; padding:3px;">${labelGP}</td><td style="border:none; padding:3px; text-align:right;">Rp ${totGP.toLocaleString()}</td></tr>
+                                <tr><td style="border:none; padding:3px;">Uang Makan (${h}x)</td><td style="border:none; padding:3px; text-align:right;">Rp ${totUM.toLocaleString()}</td></tr>
+                                <tr><td style="border:none; padding:3px;">Tunj. Transport (${h}x)</td><td style="border:none; padding:3px; text-align:right;">Rp ${totUT.toLocaleString()}</td></tr>
+                                <tr><td style="border:none; padding:3px;">Uang Lembur (${jamLbr}j)</td><td style="border:none; padding:3px; text-align:right;">Rp ${totLbr.toLocaleString()}</td></tr>
+                            </table>
+                            <br>
+                            <div style="border-top:1px solid #000; padding-top:5px; font-weight:bold; display:flex; justify-content:space-between;">
+                                <span>TOTAL PENERIMAAN</span><span>Rp ${totPendapatan.toLocaleString()}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <table style="border:none; width:100%;">
+                                <tr><td style="border:none; padding:3px;">BPJS / Asuransi</td><td style="border:none; padding:3px; text-align:right;">Rp ${bpjs.toLocaleString()}</td></tr>
+                                <tr><td style="border:none; padding:3px;">Kasbon / Pinjaman</td><td style="border:none; padding:3px; text-align:right;">Rp ${kasbon.toLocaleString()}</td></tr>
+                            </table>
+                            <br><br><br>
+                            <div style="border-top:1px solid #000; padding-top:5px; font-weight:bold; display:flex; justify-content:space-between;">
+                                <span>TOTAL POTONGAN</span><span>Rp ${totPotongan.toLocaleString()}</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="slip-total">TAKE HOME PAY : Rp ${thp.toLocaleString()}</div>
+
+                <div class="ttd-area">
+                    <div class="ttd-box"><p>Penerima,</p><br><br><br><br><p style="font-weight:bold; text-decoration:underline;">${k.nm}</p></div>
+                    <div class="ttd-box"><p>HRD & Finance,</p><br><br><br><br><p style="font-weight:bold; text-decoration:underline;">${PT}</p></div>
+                </div>
+            </div>
+            <button class="btn-main no-print" onclick="window.print()" style="margin-top:20px; padding:15px; font-size:14px; width:100%;">🖨️ CETAK DOKUMEN SLIP</button>
+        `;
+        document.getElementById('v-slip').style.display = 'block';
+    }
+
+    // --- 7. REKAP GAJI MASTER ---
+    function generateRekap() {
+        let bln = document.getElementById('p-bln').value;
+        let html = `<tr style="background:#f1f5f9; text-align:center;"><th>NAMA</th><th>HADIR</th><th>PENDAPATAN</th><th>POTONGAN</th><th>THP BERSIH</th></tr>`;
+        let grandTHP = 0;
+        
+        db_k.forEach(k => {
+            let abs = db_a.filter(x => x.id === k.id && x.tgl.startsWith(bln));
+            let h = abs.filter(x => x.st === "HADIR").length;
+            let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0);
+            
+            // Logika Tipe Gaji untuk Rekap
+            let tipeGP = k.tipe_gp || 'harian';
+            let totGP = (tipeGP === 'bulanan') ? k.gp : (h * k.gp);
+            
+            let pndp = totGP + (h * k.um) + (h * k.ut) + (jamLbr * k.ul);
+            let pot = k.bpjs || 0; 
+            let thp = pndp - pot;
+            grandTHP += thp;
+            
+            if(h > 0 || pot > 0 || tipeGP === 'bulanan') { 
+                html += `<tr><td style="text-align:left;"><b>${k.nm}</b></td><td style="text-align:center;">${h}</td><td>Rp ${pndp.toLocaleString()}</td><td>Rp ${pot.toLocaleString()}</td><td><b>Rp ${thp.toLocaleString()}</b></td></tr>`;
+            }
+        });
+        html += `<tr style="background:#e2e8f0;"><td colspan="4" style="text-align:right; font-weight:bold;">GRAND TOTAL PAYROLL:</td><td style="font-weight:bold; color:var(--danger); font-size:14px;">Rp ${grandTHP.toLocaleString()}</td></tr>`;
+        document.getElementById('tabel-rekap').innerHTML = html;
+    }
+
+    // --- 8. RENDER & UI ENGINE ---
+    function render() {
+        document.getElementById('v-pt').innerText = PT;
+        document.getElementById('s-pt').value = PT;
+        document.getElementById('v-tgl').innerText = t_now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('t-k').innerText = db_k.length;
+        document.getElementById('t-h').innerText = db_a.filter(x => x.tgl === hariIni && x.st === "HADIR").length;
+        
+        let pencarian = document.getElementById('cari-kar') ? document.getElementById('cari-kar').value.toLowerCase() : "";
+        let filterK = db_k.filter(x => x.nm.toLowerCase().includes(pencarian) || x.id.toLowerCase().includes(pencarian));
+        
+        let lk = "<table>"; let opt = "<option value=''>-- Pilih Karyawan --</option>";
+        filterK.forEach(x => { 
+            let tipe = x.tipe_gp === 'bulanan' ? 'Bulan' : 'Hari'; // Keterangan di list
+            lk += `<tr><td><b>${x.nm}</b><br><span style="color:#64748b; font-size:10px;">NIK: ${x.id} | GP: Rp${(x.gp || 0).toLocaleString()}/${tipe}</span></td><td align="right" style="white-space:nowrap;"><button class="btn-sm btn-edit" onclick="editK('${x.id}')">✏️ Edit</button> <button class="btn-sm btn-danger" onclick="delK('${x.id}')">🗑️</button></td></tr>`;
+        });
+        db_k.forEach(x => { opt += `<option value="${x.id}">${x.id} - ${x.nm}</option>`; });
+        
+        document.getElementById('list-k').innerHTML = lk + "</table>";
+        document.getElementById('a-sel').innerHTML = opt; document.getElementById('p-sel').innerHTML = opt;
+
+        let la = "<table><tr><th>TGL</th><th>KARYAWAN</th><th>STATUS</th><th>OPSI</th></tr>";
+        db_a.slice(0, 20).forEach(x => { 
+            let k = db_k.find(y => y.id === x.id); 
+            let warna = x.st==='HADIR'?'bg-green':(x.st==='ALPA'?'bg-red':'bg-yellow');
+            la += `<tr><td>${x.tgl.slice(8)}/${x.tgl.slice(5,7)}</td><td><b>${k?k.nm:'?'}</b><br><small>${x.lb>0?'+Lembur '+x.lb+'j':''}</small></td><td><span class="badge ${warna}">${x.st}</span></td><td><button class="btn-sm btn-danger" onclick="delA('${x.tgl}','${x.id}')">❌</button></td></tr>`; 
+        });
+        document.getElementById('list-a').innerHTML = la + "</table>";
+    }
+
+    function buka(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); event.currentTarget.classList.add('active'); window.scrollTo(0,0);}
+    
+    render();
+</script>
+</body>
+</html>
