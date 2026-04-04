@@ -11,9 +11,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="HRD Pro">
     
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
     <style>
         :root { --primary: #0f172a; --accent: #2563eb; --success: #16a34a; --danger: #dc2626; --warn: #d97706; --bg: #f1f5f9; --text: #334155; }
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -108,7 +105,7 @@
                 <div><label>UANG MAKAN (Harian)</label><input type="number" id="k-um" value="0"></div>
                 <div><label>UANG TRANSPORT (Harian)</label><input type="number" id="k-ut" value="0"></div>
                 <div><label>TARIF LEMBUR (Per Jam)</label><input type="number" id="k-ul" value="0"></div>
-                <div style="grid-column: span 1;"><label style="color:var(--danger)">POTONGAN BPJS (Bulan)</label><input type="number" id="k-bpjs" value="0" placeholder="Biarkan 0 jika tidak ada"></div>
+                <div style="grid-column: span 1;"><label style="color:var(--danger)">POTONGAN BPJS (Bulan)</label><input type="number" id="k-bpjs" value="0" placeholder="0 jika tak ada"></div>
             </div>
         </div>
         
@@ -190,9 +187,18 @@
     </div>
     
     <div class="card" style="border-top: 3px solid var(--success);">
-        <h3 style="color:var(--success)">💾 STATUS CLOUD DATABASE</h3>
-        <p style="font-size:11px; color:#64748b; font-weight:bold;">🟢 Terhubung ke Firebase Server</p>
-        <p style="font-size:11px; color:#64748b;">Data Anda kini otomatis tersimpan di cloud secara real-time. Tidak perlu khawatir kehilangan data.</p>
+        <h3 style="color:var(--success)">💾 DATABASE MANAGEMENT</h3>
+        <p style="font-size:11px; color:#64748b;">Backup data Anda secara berkala untuk mencegah kehilangan data jika aplikasi direset.</p>
+        <div class="grid">
+            <button class="btn-success" onclick="exportData()">⬇️ BACKUP DATA (.json)</button>
+            <button class="btn-warn" onclick="document.getElementById('import-file').click()">⬆️ RESTORE DATA</button>
+            <input type="file" id="import-file" style="display:none;" accept=".json" onchange="importData(event)">
+        </div>
+    </div>
+
+    <div class="card" style="border-top: 3px solid var(--danger);">
+        <h3 style="color:var(--danger)">⚠️ ZONA BERBAHAYA</h3>
+        <button class="btn-danger" style="padding:15px;" onclick="resetAll()">🗑️ HAPUS SELURUH DATA SISTEM PERMANEN</button>
     </div>
 </div>
 
@@ -205,25 +211,10 @@
 </nav>
 
 <script>
-    // --- KONFIGURASI FIREBASE (GANTI PAKAI PUNYA LU NANTI BOS!) ---
-    const firebaseConfig = {
-      apiKey: "GANTI_DENGAN_API_KEY",
-      authDomain: "GANTI_DENGAN_PROJECT_ID.firebaseapp.com",
-      projectId: "GANTI_DENGAN_PROJECT_ID",
-      storageBucket: "GANTI_DENGAN_PROJECT_ID.appspot.com",
-      messagingSenderId: "GANTI_DENGAN_SENDER_ID",
-      appId: "GANTI_DENGAN_APP_ID"
-    };
-    
-    // Inisialisasi Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // --- PWA REGISTRATION ---
     let deferredPrompt;
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Error', err));
+        navigator.serviceWorker.register('./sw.js').then(reg => console.log('PWA SW Registered')).catch(err => console.log('SW Error', err));
       });
     }
 
@@ -237,29 +228,10 @@
       });
     });
 
-    // --- 1. VARIABEL DATABASE ---
-    let db_k = [];
-    let db_a = [];
-    let PT = "NAMA PERUSAHAAN";
+    let db_k = JSON.parse(localStorage.getItem('hr_kar')) || [];
+    let db_a = JSON.parse(localStorage.getItem('hr_absen')) || [];
+    let PT = localStorage.getItem('hr_pt') || "NAMA PERUSAHAAN";
 
-    // --- 2. SINKRONISASI REALTIME KE FIREBASE ---
-    db.collection("karyawan").onSnapshot((snapshot) => {
-        db_k = [];
-        snapshot.forEach((doc) => { db_k.push(doc.data()); });
-        render();
-    });
-
-    db.collection("absensi").orderBy("tgl", "desc").onSnapshot((snapshot) => {
-        db_a = [];
-        snapshot.forEach((doc) => { db_a.push(doc.data()); });
-        render();
-    });
-
-    db.collection("settings").doc("perusahaan").onSnapshot((doc) => {
-        if(doc.exists) { PT = doc.data().nama; render(); }
-    });
-
-    // --- KUNCI TANGGAL ---
     let t_now = new Date();
     let hariIni = new Date(t_now.getTime() - (t_now.getTimezoneOffset() * 60000)).toISOString().slice(0,10);
     
@@ -267,31 +239,54 @@
     document.getElementById('a-tgl').setAttribute('max', hariIni);
     document.getElementById('p-bln').value = hariIni.slice(0,7);
 
-    // --- 3. FUNGSI PENGATURAN ---
     function saveS() { 
         let ptName = document.getElementById('s-pt').value;
-        if(ptName) { 
-            db.collection("settings").doc("perusahaan").set({ nama: ptName });
-            alert("Nama Perusahaan Diperbarui di Server!"); 
-        }
+        if(ptName) { localStorage.setItem('hr_pt', ptName); alert("Nama Perusahaan Diperbarui!"); location.reload(); }
     }
 
-    // --- 4. FUNGSI PEGAWAI (CRUD) ---
+    function exportData() {
+        let backup = { hr_kar: db_k, hr_absen: db_a, hr_pt: PT };
+        let blob = new Blob([JSON.stringify(backup)], {type: "application/json"});
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url; a.download = `Backup_HRD_${hariIni}.json`; a.click();
+    }
+
+    function importData(event) {
+        let file = event.target.files[0];
+        if(!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let data = JSON.parse(e.target.result);
+                if(data.hr_kar && data.hr_absen) {
+                    localStorage.setItem('hr_kar', JSON.stringify(data.hr_kar));
+                    localStorage.setItem('hr_absen', JSON.stringify(data.hr_absen));
+                    if(data.hr_pt) localStorage.setItem('hr_pt', data.hr_pt);
+                    alert("Restore Database Berhasil!"); location.reload();
+                } else { alert("File JSON tidak valid!"); }
+            } catch(err) { alert("Error membaca file!"); }
+        };
+        reader.readAsText(file);
+    }
+
     function saveK() {
         let id = document.getElementById('k-id').value.trim().toUpperCase();
         if(!id || !document.getElementById('k-nm').value) return alert("NAMA dan ID/NIK Wajib Diisi!");
         
         let d = { 
             id: id, nm: document.getElementById('k-nm').value, jb: document.getElementById('k-jb').value, 
-            tipe_gp: document.getElementById('k-tipe-gp').value, // Simpan tipe gaji
+            tipe_gp: document.getElementById('k-tipe-gp').value,
             gp: parseInt(document.getElementById('k-gp').value) || 0, um: parseInt(document.getElementById('k-um').value) || 0, 
             ut: parseInt(document.getElementById('k-ut').value) || 0, ul: parseInt(document.getElementById('k-ul').value) || 0,
             bpjs: parseInt(document.getElementById('k-bpjs').value) || 0
         };
         
-        db.collection("karyawan").doc(id).set(d).then(() => {
-            resK(); alert("Data Karyawan Tersimpan di Cloud!");
-        }).catch(err => alert("Gagal Simpan: " + err.message));
+        let idx = db_k.findIndex(x => x.id === id);
+        if(idx > -1) db_k[idx] = d; else db_k.push(d);
+        
+        localStorage.setItem('hr_kar', JSON.stringify(db_k));
+        resK(); render(); alert("Data Karyawan Disimpan!");
     }
 
     function editK(id) {
@@ -299,7 +294,7 @@
         if(!x) return;
         document.getElementById('k-id').value = x.id; document.getElementById('k-id').readOnly = true; document.getElementById('k-id').style.background = "#e2e8f0";
         document.getElementById('k-nm').value = x.nm; document.getElementById('k-jb').value = x.jb;
-        document.getElementById('k-tipe-gp').value = x.tipe_gp || 'harian'; // Load tipe gaji
+        document.getElementById('k-tipe-gp').value = x.tipe_gp || 'harian';
         document.getElementById('k-gp').value = x.gp; document.getElementById('k-um').value = x.um;
         document.getElementById('k-ut').value = x.ut; document.getElementById('k-ul').value = x.ul;
         document.getElementById('k-bpjs').value = x.bpjs || 0;
@@ -311,43 +306,23 @@
     function resK() {
         document.getElementById('k-id').value = ""; document.getElementById('k-id').readOnly = false; document.getElementById('k-id').style.background = "white";
         document.getElementById('k-nm').value = ""; document.getElementById('k-jb').value = "";
-        document.getElementById('k-tipe-gp').value = "harian"; // Reset ke default
+        document.getElementById('k-tipe-gp').value = "harian";
         document.getElementById('k-gp').value = 0; document.getElementById('k-um').value = 0; document.getElementById('k-ut').value = 0; document.getElementById('k-ul').value = 0; document.getElementById('k-bpjs').value = 0;
         document.getElementById('f-title').innerHTML = "📝 INPUT / EDIT PEGAWAI"; document.getElementById('btn-save').innerHTML = "💾 SIMPAN DATA KARYAWAN"; document.getElementById('btn-cancel').style.display = "none";
     }
 
-    function delK(id) { 
-        if(confirm("Hapus Permanen Karyawan Ini dari Server?")) { 
-            db.collection("karyawan").doc(id).delete(); 
-        } 
-    }
+    function delK(id) { if(confirm("Hapus Permanen Karyawan Ini?")) { db_k = db_k.filter(x => x.id !== id); localStorage.setItem('hr_kar', JSON.stringify(db_k)); render(); } }
 
-    // --- 5. FUNGSI ABSENSI ---
     function saveA() {
-        let id = document.getElementById('a-sel').value; 
-        let tgl = document.getElementById('a-tgl').value;
+        let id = document.getElementById('a-sel').value; let tgl = document.getElementById('a-tgl').value;
         if(!id) return alert("Pilih Karyawan!");
-        
-        let docId = id + "_" + tgl; 
-        
-        db.collection("absensi").doc(docId).set({ 
-            tgl: tgl, 
-            id: id, 
-            st: document.getElementById('a-st').value, 
-            lb: parseInt(document.getElementById('a-lb').value) || 0 
-        }).then(() => {
-            alert("Absen Tersimpan di Cloud!");
-        });
+        db_a = db_a.filter(x => !(x.tgl === tgl && x.id === id));
+        db_a.push({ tgl: tgl, id: id, st: document.getElementById('a-st').value, lb: parseInt(document.getElementById('a-lb').value) || 0 });
+        localStorage.setItem('hr_absen', JSON.stringify(db_a)); render(); alert("Absen Tercatat!");
     }
 
-    function delA(tgl, id) { 
-        let docId = id + "_" + tgl;
-        if(confirm("Hapus Riwayat Absen dari Server?")) { 
-            db.collection("absensi").doc(docId).delete();
-        } 
-    }
+    function delA(tgl, id) { if(confirm("Hapus Riwayat Absen?")) { db_a = db_a.filter(x => !(x.tgl === tgl && x.id === id)); localStorage.setItem('hr_absen', JSON.stringify(db_a)); render(); } }
 
-    // --- 6. FUNGSI PAYROLL & CETAK SLIP ---
     function getSlip() {
         let id = document.getElementById('p-sel').value; let bln = document.getElementById('p-bln').value;
         if(!id) return alert("Pilih Karyawan!");
@@ -360,15 +335,21 @@
         let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0);
         let kasbon = parseInt(document.getElementById('p-kasbon').value) || 0;
         
-        // Logika Tipe Gaji
         let tipeGP = k.tipe_gp || 'harian';
         let totGP = (tipeGP === 'bulanan') ? k.gp : (h * k.gp);
         let labelGP = (tipeGP === 'bulanan') ? 'Gaji Pokok (Bln)' : `Gaji Pokok (${h}x)`;
         
+        // LOGIKA BARU: Potong gaji kalau ALPA khusus bulanan (Asumsi pembagi 26 hari kerja)
+        let potAlpa = 0;
+        if(tipeGP === 'bulanan' && a > 0) {
+            potAlpa = Math.floor(k.gp / 26) * a;
+        }
+        
         let totUM = h * k.um; let totUT = h * k.ut; let totLbr = jamLbr * k.ul;
         let totPendapatan = totGP + totUM + totUT + totLbr;
         
-        let bpjs = k.bpjs || 0; let totPotongan = bpjs + kasbon; 
+        let bpjs = k.bpjs || 0; 
+        let totPotongan = bpjs + kasbon + potAlpa; 
         let thp = totPendapatan - totPotongan;
 
         let nmBln = new Date(bln + "-01").toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
@@ -418,6 +399,7 @@
                             <table style="border:none; width:100%;">
                                 <tr><td style="border:none; padding:3px;">BPJS / Asuransi</td><td style="border:none; padding:3px; text-align:right;">Rp ${bpjs.toLocaleString()}</td></tr>
                                 <tr><td style="border:none; padding:3px;">Kasbon / Pinjaman</td><td style="border:none; padding:3px; text-align:right;">Rp ${kasbon.toLocaleString()}</td></tr>
+                                ${potAlpa > 0 ? `<tr><td style="border:none; padding:3px; color:var(--danger); font-weight:bold;">Alpa Mangkir (${a}x)</td><td style="border:none; padding:3px; text-align:right; color:var(--danger); font-weight:bold;">Rp ${potAlpa.toLocaleString()}</td></tr>` : ''}
                             </table>
                             <br><br><br>
                             <div style="border-top:1px solid #000; padding-top:5px; font-weight:bold; display:flex; justify-content:space-between;">
@@ -439,7 +421,6 @@
         document.getElementById('v-slip').style.display = 'block';
     }
 
-    // --- 7. REKAP GAJI MASTER ---
     function generateRekap() {
         let bln = document.getElementById('p-bln').value;
         let html = `<tr style="background:#f1f5f9; text-align:center;"><th>NAMA</th><th>HADIR</th><th>PENDAPATAN</th><th>POTONGAN</th><th>THP BERSIH</th></tr>`;
@@ -448,14 +429,19 @@
         db_k.forEach(k => {
             let abs = db_a.filter(x => x.id === k.id && x.tgl.startsWith(bln));
             let h = abs.filter(x => x.st === "HADIR").length;
+            let a = abs.filter(x => x.st === "ALPA").length;
             let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0);
             
-            // Logika Tipe Gaji untuk Rekap
             let tipeGP = k.tipe_gp || 'harian';
             let totGP = (tipeGP === 'bulanan') ? k.gp : (h * k.gp);
             
+            let potAlpa = 0;
+            if(tipeGP === 'bulanan' && a > 0) {
+                potAlpa = Math.floor(k.gp / 26) * a;
+            }
+            
             let pndp = totGP + (h * k.um) + (h * k.ut) + (jamLbr * k.ul);
-            let pot = k.bpjs || 0; 
+            let pot = (k.bpjs || 0) + potAlpa; 
             let thp = pndp - pot;
             grandTHP += thp;
             
@@ -467,7 +453,6 @@
         document.getElementById('tabel-rekap').innerHTML = html;
     }
 
-    // --- 8. RENDER & UI ENGINE ---
     function render() {
         document.getElementById('v-pt').innerText = PT;
         document.getElementById('s-pt').value = PT;
@@ -480,7 +465,7 @@
         
         let lk = "<table>"; let opt = "<option value=''>-- Pilih Karyawan --</option>";
         filterK.forEach(x => { 
-            let tipe = x.tipe_gp === 'bulanan' ? 'Bulan' : 'Hari'; // Keterangan di list
+            let tipe = x.tipe_gp === 'bulanan' ? 'Bulan' : 'Hari'; 
             lk += `<tr><td><b>${x.nm}</b><br><span style="color:#64748b; font-size:10px;">NIK: ${x.id} | GP: Rp${(x.gp || 0).toLocaleString()}/${tipe}</span></td><td align="right" style="white-space:nowrap;"><button class="btn-sm btn-edit" onclick="editK('${x.id}')">✏️ Edit</button> <button class="btn-sm btn-danger" onclick="delK('${x.id}')">🗑️</button></td></tr>`;
         });
         db_k.forEach(x => { opt += `<option value="${x.id}">${x.id} - ${x.nm}</option>`; });
@@ -489,7 +474,7 @@
         document.getElementById('a-sel').innerHTML = opt; document.getElementById('p-sel').innerHTML = opt;
 
         let la = "<table><tr><th>TGL</th><th>KARYAWAN</th><th>STATUS</th><th>OPSI</th></tr>";
-        db_a.slice(0, 20).forEach(x => { 
+        db_a.slice(-20).reverse().forEach(x => { 
             let k = db_k.find(y => y.id === x.id); 
             let warna = x.st==='HADIR'?'bg-green':(x.st==='ALPA'?'bg-red':'bg-yellow');
             la += `<tr><td>${x.tgl.slice(8)}/${x.tgl.slice(5,7)}</td><td><b>${k?k.nm:'?'}</b><br><small>${x.lb>0?'+Lembur '+x.lb+'j':''}</small></td><td><span class="badge ${warna}">${x.st}</span></td><td><button class="btn-sm btn-danger" onclick="delA('${x.tgl}','${x.id}')">❌</button></td></tr>`; 
@@ -498,6 +483,7 @@
     }
 
     function buka(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); event.currentTarget.classList.add('active'); window.scrollTo(0,0);}
+    function resetAll() { if(confirm("PERINGATAN! Seluruh data pegawai dan absensi akan terhapus. Lanjutkan?")) { localStorage.clear(); location.reload(); } }
     
     render();
 </script>
