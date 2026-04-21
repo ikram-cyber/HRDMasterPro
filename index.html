@@ -3,73 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HRD Master Pro | Enterprise HRIS</title>
+    <title>HRD Master Pro | People Analytics & HRIS</title>
     <meta name="theme-color" content="#0f172a">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #0f172a; --accent: #2563eb; --success: #10b981; --danger: #ef4444; --warn: #f59e0b; --bg: #f8fafc; --text: #334155; --card: #ffffff; }
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 80px; font-size: 13px; }
-        
-        /* Desain Card Enterprise */
+        body { background: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 90px; font-size: 13px; -webkit-tap-highlight-color: transparent;}
+
         .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 16px; border: 1px solid #e2e8f0; }
-        .hero-box { background: linear-gradient(135deg, var(--primary), #1e293b); color: white; border: none; text-align: center; padding: 30px 15px; border-radius: 12px; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2); margin-bottom: 20px; }
+        .hero-box { background: linear-gradient(135deg, #1e293b, var(--primary)); color: white; border: none; text-align: center; padding: 30px 15px; border-radius: 12px; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2); margin-bottom: 20px; position:relative; overflow:hidden;}
         
-        h3 { margin: 0 0 15px 0; color: var(--primary); border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; font-size: 14px; text-transform: uppercase; font-weight: 800; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.5px; }
-        
-        /* Grid System & Dashboard Metrics */
+        h3 { margin: 0 0 15px 0; color: var(--primary); border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; font-size: 14px; text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .grid-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
         .metric-card { background: white; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; transition: 0.3s; }
-        .metric-card:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-color: var(--accent); }
-        .m-title { font-size: 10px; color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-        .m-val { font-size: 22px; font-weight: 900; margin-top: 8px; color: var(--primary); }
-        
-        /* Forms & Buttons */
-        input, select, button { width: 100%; padding: 12px; margin: 6px 0 14px 0; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; transition: 0.3s; background: #fff; }
+        .m-title { font-size: 9px; color: #64748b; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        .m-val { font-size: 20px; font-weight: 900; margin-top: 8px; color: var(--primary); }
+
+        input, select, button, textarea { width: 100%; padding: 12px; margin: 6px 0 14px 0; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px; outline: none; transition: 0.3s; background: #fff; }
         input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        label { font-size: 11px; font-weight: 700; color: #475569; margin-bottom: -4px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .btn-main { background: var(--accent); color: white; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        label { font-size: 11px; font-weight: 800; color: #475569; margin-bottom: -4px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .btn-main { background: var(--accent); color: white; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         .btn-main:hover { background: #1d4ed8; }
         .btn-success { background: var(--success); color: white; border: none; font-weight: bold; cursor: pointer; }
         .btn-danger { background: var(--danger); color: white; border: none; cursor: pointer; font-weight: bold; }
         .btn-warn { background: var(--warn); color: white; border: none; cursor: pointer; font-weight: bold; }
-        .btn-sm { padding: 6px 10px; font-size: 11px; margin: 0 2px 0 0; width: auto; border-radius: 6px; display: inline-block; }
-        
-        /* Table Master */
-        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 5px; }
+        .btn-sm { padding: 6px 10px; font-size: 10px; margin: 0 2px 0 0; width: auto; border-radius: 6px; display: inline-block; font-weight:bold; border:none;}
+
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 5px; }
         th, td { padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: middle; }
-        th { background: #f8fafc; font-weight: 800; color: #64748b; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
-        .bg-green { background: #d1fae5; color: #059669; } .bg-red { background: #fee2e2; color: #dc2626; } .bg-yellow { background: #fef3c7; color: #d97706; }
+        th { background: #f8fafc; font-weight: 900; color: #64748b; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
         
-        /* Navigation */
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 9px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; color:white; }
+        .bg-green { background: #10b981; } .bg-red { background: #ef4444; } .bg-yellow { background: #f59e0b; color:#000; } .bg-dark { background: #0f172a; }
+
+        /* Bradford Factor Colors */
+        .bf-low { color: #10b981; font-weight: 900; }
+        .bf-med { color: #f59e0b; font-weight: 900; }
+        .bf-high { color: #ef4444; font-weight: 900; }
+
         .page { display: none; animation: fadeIn 0.4s ease; } .active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
+
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e2e8f0; z-index: 1000; box-shadow: 0 -10px 20px rgba(0,0,0,0.03); }
-        .nav-item { border: none; background: none; font-size: 10px; color: #94a3b8; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; font-weight: 700; margin:0; padding:0; transition: 0.3s; }
+        .nav-item { border: none; background: none; font-size: 9px; color: #94a3b8; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; font-weight: 800; margin:0; padding:0; transition: 0.3s; letter-spacing:0.5px;}
         .nav-item.active { color: var(--accent); transform: translateY(-2px); }
-        .nav-icon { font-size: 22px; margin-bottom: 4px; }
-        .scrollable { max-height: 450px; overflow-y: auto; padding-right: 5px; }
-        
-        /* SLIP GAJI CORPORATE LAYOUT */
+        .nav-icon { font-size: 20px; margin-bottom: 4px; }
+        .scrollable { max-height: 400px; overflow-y: auto; padding-right: 5px; }
+
+        /* SLIP GAJI CORPORATE */
         .slip-box { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; font-size: 12px; line-height: 1.5; border: 1px solid #cbd5e1; padding: 30px; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         .slip-header { text-align: center; border-bottom: 4px solid var(--primary); margin-bottom: 20px; padding-bottom: 15px; }
         .slip-title { font-size: 24px; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); }
-        .slip-subtitle { font-size: 12px; color: #64748b; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
-        .slip-info { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .slip-info-table td { border: none; padding: 4px; border-bottom: 1px dashed #cbd5e1; }
-        
         .slip-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; border: 1px solid #e2e8f0; }
         .slip-table th, .slip-table td { border: 1px solid #e2e8f0; padding: 10px 12px; vertical-align: top; }
         .slip-table th { background: #f1f5f9 !important; text-align: center; font-weight: bold; -webkit-print-color-adjust: exact; color: #334155; }
         .slip-total { border: 2px solid var(--primary); padding: 15px; font-size: 18px; font-weight: 900; text-align: center; margin-bottom: 30px; background: #f8fafc; -webkit-print-color-adjust: exact; color: var(--primary); display: flex; justify-content: space-between; }
-        .ttd-area { display: flex; justify-content: space-around; text-align: center; margin-top: 20px; }
-        .ttd-box p { margin: 0; color: #475569; }
         
-        /* PRINT STYLES */
         @media print {
             body { background: white; padding: 0; margin: 0; }
             .no-print { display: none !important; }
@@ -82,68 +75,63 @@
 
     <div id="p-home" class="page active">
         <div class="hero-box no-print">
+            <div style="position:absolute; right:-10%; top:-20%; font-size:120px; opacity:0.05;">🧬</div>
             <h2 id="v-pt" style="margin:0; font-size: 24px; letter-spacing: 1px; font-weight:900;">HRD MASTER PRO</h2>
-            <p id="v-tgl" style="margin:8px 0 0 0; opacity:0.8; font-size:13px; font-weight:600;"></p>
+            <p style="margin:5px 0 0 0; font-size:11px; font-weight:700; opacity:0.9; text-transform:uppercase;">Data Scientist Mode | Sync: <span id="v-tgl"></span></p>
         </div>
-        
-        <h3 class="no-print" style="margin-bottom:10px;"><i class="fas fa-chart-pie"></i> Executive HR Metrics</h3>
+
+        <h3 class="no-print" style="margin-bottom:10px;">🧠 Human Capital Metrics</h3>
         <div class="grid-4 no-print">
-            <div class="metric-card">
-                <div class="m-title">Total Pegawai</div>
-                <div class="m-val" id="t-k">0</div>
-            </div>
-            <div class="metric-card">
-                <div class="m-title">Kehadiran (Hari Ini)</div>
-                <div class="m-val" id="t-h" style="color:var(--success);">0</div>
-            </div>
-            <div class="metric-card">
-                <div class="m-title">Attendance Rate</div>
-                <div class="m-val" id="t-pct" style="color:var(--accent);">0%</div>
-            </div>
-            <div class="metric-card">
-                <div class="m-title">Estimasi Payroll /Bln</div>
-                <div class="m-val" id="t-pay" style="font-size:16px;">Rp 0</div>
-            </div>
+            <div class="metric-card"><div class="m-title">Headcount</div><div class="m-val" id="t-k">0</div></div>
+            <div class="metric-card"><div class="m-title">Kehadiran (H)</div><div class="m-val" id="t-h" style="color:var(--success);">0</div></div>
+            <div class="metric-card"><div class="m-title">Attendance Rate</div><div class="m-val" id="t-pct" style="color:var(--accent);">0%</div></div>
+            <div class="metric-card"><div class="m-title">Est. Payroll/Bln</div><div class="m-val" id="t-pay" style="font-size:14px;">Rp 0</div></div>
+        </div>
+
+        <div class="card no-print" style="border-top:3px solid var(--danger);">
+            <h3>🚨 Organizational Risk Matrix</h3>
+            <p style="font-size:10px; color:#64748b; margin-top:-10px;">Algoritma mendeteksi karyawan dengan probabilitas tinggi merugikan produktivitas atau mengalami *Burnout* (Bulan Ini).</p>
+            <div id="view-risk" style="overflow-x:auto;"></div>
         </div>
 
         <div class="card no-print">
-            <h3 style="font-size:12px;"><i class="fas fa-chart-bar"></i> Analisis Absensi (Bulan Ini)</h3>
+            <h3 style="font-size:12px;">📊 Distribusi Perilaku Organisasi</h3>
             <canvas id="hrChart" height="200"></canvas>
         </div>
     </div>
 
     <div id="p-kar" class="page">
         <div class="card">
-            <h3 id="f-title">📝 Manajemen Data Pegawai</h3>
+            <h3 id="f-title">📝 Registrasi Master Pegawai</h3>
             <div class="grid">
                 <div><label>ID / NIK Karyawan</label><input type="text" id="k-id" placeholder="Cth: K-001" style="text-transform:uppercase; font-weight:bold;"></div>
                 <div><label>Nama Lengkap</label><input type="text" id="k-nm" placeholder="Nama Karyawan"></div>
             </div>
-            <label>Jabatan / Divisi</label><input type="text" id="k-jb" placeholder="Cth: Staff Gudang / Manager IT">
-            
+            <label>Jabatan / Divisi</label><input type="text" id="k-jb" placeholder="Cth: Data Analyst / Manager">
+
             <div style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:15px;">
-                <p style="margin:0 0 15px 0; font-size:12px; font-weight:800; color:var(--primary); text-transform:uppercase;">💰 Struktur Kompensasi Dasar</p>
+                <p style="margin:0 0 15px 0; font-size:10px; font-weight:900; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px;">💰 Struktur Kompensasi (Remuneration)</p>
                 <div class="grid">
                     <div><label>Gaji Pokok (Harian)</label><input type="number" id="k-gp" value="0"></div>
                     <div><label>Uang Makan (Harian)</label><input type="number" id="k-um" value="0"></div>
                     <div><label>Uang Transport (Harian)</label><input type="number" id="k-ut" value="0"></div>
                     <div><label>Tarif Lembur (Per Jam)</label><input type="number" id="k-ul" value="0"></div>
-                    <div style="grid-column: span 2;"><label style="color:var(--danger)">Potongan BPJS / Asuransi (Per Bulan)</label><input type="number" id="k-bpjs" value="0" placeholder="Biarkan 0 jika tidak ada"></div>
+                    <div style="grid-column: span 2;"><label style="color:var(--danger)">Potongan Asuransi/BPJS (Bulan)</label><input type="number" id="k-bpjs" value="0"></div>
                 </div>
             </div>
-            <button id="btn-save" class="btn-main" onclick="saveK()">💾 SIMPAN DATA KARYAWAN</button>
+            <button id="btn-save" class="btn-main" onclick="saveK()">💾 SIMPAN DATA PEGAWAI</button>
             <button id="btn-cancel" class="btn-danger" style="display:none;" onclick="resK()">❌ BATAL EDIT</button>
         </div>
         <div class="card">
-            <h3>📋 Database Karyawan Aktif</h3>
-            <input type="text" id="cari-kar" placeholder="🔍 Cari berdasarkan Nama / NIK / Jabatan..." onkeyup="render()">
+            <h3>📋 Human Resource Database</h3>
+            <input type="text" id="cari-kar" placeholder="🔍 Cari berdasarkan Nama / NIK..." onkeyup="render()">
             <div class="scrollable" id="list-k"></div>
         </div>
     </div>
 
     <div id="p-abs" class="page">
         <div class="card">
-            <h3>⏱️ Catat Kehadiran Harian</h3>
+            <h3>⏱️ Catat Kehadiran (Time Tracking)</h3>
             <div class="grid">
                 <div><label>Tanggal</label><input type="date" id="a-tgl"></div>
                 <div><label>Pilih Karyawan</label><select id="a-sel"></select></div>
@@ -151,14 +139,14 @@
             <div class="grid">
                 <div>
                     <label>Status Kehadiran</label>
-                    <select id="a-st">
+                    <select id="a-st" style="font-weight:bold;">
                         <option value="HADIR">HADIR</option>
-                        <option value="SAKIT">SAKIT (Dengan Keterangan)</option>
+                        <option value="SAKIT">SAKIT (Cuti Medis)</option>
                         <option value="IZIN">IZIN</option>
                         <option value="ALPA">ALPA (Tanpa Keterangan)</option>
                     </select>
                 </div>
-                <div><label>Jam Lembur (Overtime)</label><input type="number" id="a-lb" value="0" placeholder="0"></div>
+                <div><label>Jam Lembur (Overtime)</label><input type="number" id="a-lb" value="0"></div>
             </div>
             <button class="btn-main" onclick="saveA()">⚡ SUBMIT ABSENSI</button>
         </div>
@@ -177,11 +165,11 @@
             </div>
             <div style="background:#fff7ed; padding:15px; border-radius:8px; border:1px solid #fdba74; margin-bottom:15px;">
                 <label style="color:#c2410c;">Potongan Pinjaman / Kasbon (Bulan Ini)</label>
-                <input type="number" id="p-kasbon" value="0" placeholder="Nominal kasbon yang akan dipotong">
+                <input type="number" id="p-kasbon" value="0">
             </div>
             <div class="grid">
                 <button class="btn-main" onclick="getSlip()">📄 CETAK SLIP GAJI</button>
-                <button class="btn-warn" onclick="buka('rekap'); generateRekap();">📊 MASTER REKAP PAYROLL</button>
+                <button class="btn-warn" onclick="buka('rekap'); generateRekap();">📊 MASTER REKAP</button>
             </div>
         </div>
         <div id="v-slip" class="card" style="display:none; padding:10px;"></div>
@@ -190,48 +178,48 @@
     <div id="p-rekap" class="page">
         <div class="card no-print">
             <h3 style="color:var(--primary)">📊 Master Payroll Report</h3>
-            <p style="font-size:11px; color:#64748b; margin-top:-10px;">Laporan agregat komponen gaji perusahaan untuk keperluan otorisasi Finance.</p>
             <button class="btn-danger" style="margin-bottom:15px; width:auto; padding:8px 15px;" onclick="buka('pay')">⬅️ KEMBALI</button>
             <div style="overflow-x:auto;">
                 <table id="tabel-rekap" border="1" style="width:100%; border-collapse:collapse; text-align:right;"></table>
             </div>
-            <button class="btn-success" style="margin-top:15px;" onclick="exportExcel()">⬇️ EXPORT KE EXCEL (CSV)</button>
+            <button class="btn-success" style="margin-top:15px; width:100%; padding:15px; font-size:14px; font-weight:bold;" onclick="exportExcel()">⬇️ EXPORT KE EXCEL (CSV)</button>
         </div>
     </div>
 
     <div id="p-set" class="page">
         <div class="card">
-            <h3>⚙️ Konfigurasi Perusahaan</h3>
-            <label>Nama Entitas / Perusahaan (Untuk Header Laporan)</label>
+            <h3>⚙️ Konfigurasi Sistem</h3>
+            <label>Nama Entitas / Perusahaan</label>
             <input type="text" id="s-pt" placeholder="Contoh: PT. Ikram Cyber Technology">
             <button class="btn-main" onclick="saveS()">🔄 UPDATE KONFIGURASI</button>
         </div>
-        
+
         <div class="card" style="border-top: 3px solid var(--success);">
             <h3 style="color:var(--success)">💾 Manajemen Database</h3>
-            <p style="font-size:11px; color:#64748b;">Gunakan fitur ini untuk membackup seluruh data HRIS Anda secara berkala.</p>
             <div class="grid">
-                <button class="btn-success" onclick="exportData()">⬇️ BACKUP SYSTEM (.json)</button>
-                <button class="btn-warn" onclick="document.getElementById('import-file').click()">⬆️ RESTORE SYSTEM</button>
+                <button class="btn-success" onclick="exportData()">⬇️ BACKUP (.json)</button>
+                <button class="btn-warn" onclick="document.getElementById('import-file').click()">⬆️ RESTORE</button>
                 <input type="file" id="import-file" style="display:none;" accept=".json" onchange="importData(event)">
             </div>
         </div>
 
         <div class="card" style="border-top: 3px solid var(--danger);">
             <h3 style="color:var(--danger)">⚠️ Zona Berbahaya</h3>
-            <button class="btn-danger" style="padding:15px; font-weight:900;" onclick="resetAll()">🗑️ FACTORY RESET (HAPUS SEMUA DATA)</button>
+            <button class="btn-danger" style="width:100%; padding:15px; font-weight:900;" onclick="resetAll()">🗑️ FACTORY RESET (HAPUS SEMUA DATA)</button>
         </div>
     </div>
 
+    <div style="text-align: center; padding: 20px; color: #64748b; font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-bottom: 10px;" class="no-print">&copy; 2026 Ikram Cyber System</div>
+
     <nav class="bottom-nav no-print">
-        <div class="nav-item active" onclick="buka('home')"><div class="nav-icon">📊</div>DASHBOARD</div>
+        <div class="nav-item active" onclick="buka('home')"><div class="nav-icon">🔬</div>ANALYTICS</div>
         <div class="nav-item" onclick="buka('kar')"><div class="nav-icon">👥</div>PEGAWAI</div>
         <div class="nav-item" onclick="buka('abs')"><div class="nav-icon">⏱️</div>ABSENSI</div>
         <div class="nav-item" onclick="buka('pay')"><div class="nav-icon">💰</div>PAYROLL</div>
         <div class="nav-item" onclick="buka('set')"><div class="nav-icon">⚙️</div>SETING</div>
     </nav>
 
-    <div style="text-align: center; padding: 20px; color: #64748b; font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-bottom: 10px;" class="no-print">&copy; 2026 Ikram Cyber System</div><script>
+    <script>
         // INIT DATA
         let db_k = JSON.parse(localStorage.getItem('hr_kar')) || [];
         let db_a = JSON.parse(localStorage.getItem('hr_absen')) || [];
@@ -241,7 +229,6 @@
         // DATE LOCK
         let t_now = new Date();
         let hariIni = new Date(t_now.getTime() - (t_now.getTimezoneOffset() * 60000)).toISOString().slice(0,10);
-        
         document.getElementById('a-tgl').value = hariIni;
         document.getElementById('a-tgl').setAttribute('max', hariIni);
         document.getElementById('p-bln').value = hariIni.slice(0,7);
@@ -256,13 +243,11 @@
             let backup = { hr_kar: db_k, hr_absen: db_a, hr_pt: PT };
             let blob = new Blob([JSON.stringify(backup)], {type: "application/json"});
             let url = URL.createObjectURL(blob);
-            let a = document.createElement('a');
-            a.href = url; a.download = `HRIS_Backup_${hariIni}.json`; a.click();
+            let a = document.createElement('a'); a.href = url; a.download = `HRIS_Backup_${hariIni}.json`; a.click();
         }
 
         function importData(event) {
-            let file = event.target.files[0];
-            if(!file) return;
+            let file = event.target.files[0]; if(!file) return;
             let reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -282,22 +267,16 @@
             if(db_k.length === 0) return alert("Data kosong!");
             let bln = document.getElementById('p-bln').value;
             let csvContent = "NIK,NAMA,JABATAN,HADIR,TOTAL PENDAPATAN,TOTAL POTONGAN,TAKE HOME PAY\n";
-            
             db_k.forEach(k => {
                 let abs = db_a.filter(x => x.id === k.id && x.tgl.startsWith(bln));
                 let h = abs.filter(x => x.st === "HADIR").length;
                 let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0);
                 let pndp = (h * k.gp) + (h * k.um) + (h * k.ut) + (jamLbr * k.ul);
-                let pot = k.bpjs || 0;
-                let thp = pndp - pot;
-                if(h > 0 || pot > 0) {
-                    csvContent += `${k.id},"${k.nm}","${k.jb}",${h},${pndp},${pot},${thp}\n`;
-                }
+                let pot = k.bpjs || 0; let thp = pndp - pot;
+                if(h > 0 || pot > 0) { csvContent += `${k.id},"${k.nm}","${k.jb}",${h},${pndp},${pot},${thp}\n`; }
             });
-
             let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            let url = URL.createObjectURL(blob);
-            let a = document.createElement("a");
+            let url = URL.createObjectURL(blob); let a = document.createElement("a");
             a.href = url; a.download = `Master_Payroll_${bln}.csv`;
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
@@ -306,30 +285,24 @@
         function saveK() {
             let id = document.getElementById('k-id').value.trim().toUpperCase();
             if(!id || !document.getElementById('k-nm').value) return alert("System Error: NIK dan Nama wajib diisi!");
-            
             let d = {
                 id: id, nm: document.getElementById('k-nm').value, jb: document.getElementById('k-jb').value || "Staff",
                 gp: parseInt(document.getElementById('k-gp').value) || 0, um: parseInt(document.getElementById('k-um').value) || 0,
                 ut: parseInt(document.getElementById('k-ut').value) || 0, ul: parseInt(document.getElementById('k-ul').value) || 0,
                 bpjs: parseInt(document.getElementById('k-bpjs').value) || 0
             };
-
-            let idx = db_k.findIndex(x => x.id === id);
-            if(idx > -1) db_k[idx] = d; else db_k.push(d);
-            
+            let idx = db_k.findIndex(x => x.id === id); if(idx > -1) db_k[idx] = d; else db_k.push(d);
             localStorage.setItem('hr_kar', JSON.stringify(db_k));
             resK(); render(); alert("Data Pegawai berhasil disimpan ke server lokal.");
         }
 
         function editK(id) {
-            let x = db_k.find(y => y.id === id);
-            if(!x) return;
+            let x = db_k.find(y => y.id === id); if(!x) return;
             document.getElementById('k-id').value = x.id; document.getElementById('k-id').readOnly = true; document.getElementById('k-id').style.background = "#e2e8f0";
             document.getElementById('k-nm').value = x.nm; document.getElementById('k-jb').value = x.jb;
             document.getElementById('k-gp').value = x.gp; document.getElementById('k-um').value = x.um;
             document.getElementById('k-ut').value = x.ut; document.getElementById('k-ul').value = x.ul;
             document.getElementById('k-bpjs').value = x.bpjs || 0;
-            
             document.getElementById('f-title').innerHTML = "✏️ UPDATE DATA PEGAWAI"; document.getElementById('btn-save').innerHTML = "🔄 COMMIT UPDATE"; document.getElementById('btn-cancel').style.display = "block";
             window.scrollTo(0,0);
         }
@@ -338,7 +311,7 @@
             document.getElementById('k-id').value = ""; document.getElementById('k-id').readOnly = false; document.getElementById('k-id').style.background = "white";
             document.getElementById('k-nm').value = ""; document.getElementById('k-jb').value = "";
             document.getElementById('k-gp').value = 0; document.getElementById('k-um').value = 0; document.getElementById('k-ut').value = 0; document.getElementById('k-ul').value = 0; document.getElementById('k-bpjs').value = 0;
-            document.getElementById('f-title').innerHTML = "📝 Manajemen Data Pegawai"; document.getElementById('btn-save').innerHTML = "💾 SIMPAN DATA KARYAWAN"; document.getElementById('btn-cancel').style.display = "none";
+            document.getElementById('f-title').innerHTML = "📝 Registrasi Master Pegawai"; document.getElementById('btn-save').innerHTML = "💾 SIMPAN DATA PEGAWAI"; document.getElementById('btn-cancel').style.display = "none";
         }
 
         function delK(id) { if(confirm("WARNING: Hapus permanen data karyawan ini?")) { db_k = db_k.filter(x => x.id !== id); localStorage.setItem('hr_kar', JSON.stringify(db_k)); render(); } }
@@ -360,28 +333,19 @@
         function getSlip() {
             let id = document.getElementById('p-sel').value; let bln = document.getElementById('p-bln').value;
             if(!id) return alert("Pilih Karyawan!");
-
-            let k = db_k.find(x => x.id === id);
-            let abs = db_a.filter(x => x.id === id && x.tgl.startsWith(bln));
-
+            let k = db_k.find(x => x.id === id); let abs = db_a.filter(x => x.id === id && x.tgl.startsWith(bln));
             let h = abs.filter(x => x.st === "HADIR").length; let s = abs.filter(x => x.st === "SAKIT").length;
             let i = abs.filter(x => x.st === "IZIN").length; let a = abs.filter(x => x.st === "ALPA").length;
-            let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0);
-            let kasbon = parseInt(document.getElementById('p-kasbon').value) || 0;
+            let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0); let kasbon = parseInt(document.getElementById('p-kasbon').value) || 0;
 
             let totGP = h * k.gp; let totUM = h * k.um; let totUT = h * k.ut; let totLbr = jamLbr * k.ul;
             let totPendapatan = totGP + totUM + totUT + totLbr;
-            let bpjs = k.bpjs || 0; let totPotongan = bpjs + kasbon;
-            let thp = totPendapatan - totPotongan;
+            let bpjs = k.bpjs || 0; let totPotongan = bpjs + kasbon; let thp = totPendapatan - totPotongan;
             let nmBln = new Date(bln + "-01").toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 
             document.getElementById('v-slip').innerHTML = `
                 <div class="slip-box">
-                    <div class="slip-header">
-                        <h2 class="slip-title">${PT}</h2>
-                        <div class="slip-subtitle">CONFIDENTIAL PAYSLIP DOCUMENT</div>
-                    </div>
-                    
+                    <div class="slip-header"><h2 class="slip-title">${PT}</h2><div class="slip-subtitle">CONFIDENTIAL PAYSLIP DOCUMENT</div></div>
                     <div class="slip-info">
                         <table class="slip-info-table" style="width:100%;">
                             <tr><td><b>Employee ID</b></td><td>: ${k.id}</td></tr>
@@ -394,7 +358,6 @@
                             <tr><td><b>Attendance Data</b></td><td style="font-size:10px;">: H(${h}) S(${s}) I(${i}) A(${a}) OT(${jamLbr}h)</td></tr>
                         </table>
                     </div>
-                    
                     <table class="slip-table">
                         <tr><th width="50%">EARNINGS (PENDAPATAN)</th><th width="50%">DEDUCTIONS (POTONGAN)</th></tr>
                         <tr>
@@ -404,8 +367,7 @@
                                     <tr><td style="border:none; padding:4px;">Meal Allowance</td><td style="border:none; padding:4px; text-align:right;">Rp ${formatRp(totUM)}</td></tr>
                                     <tr><td style="border:none; padding:4px;">Transport Allowance</td><td style="border:none; padding:4px; text-align:right;">Rp ${formatRp(totUT)}</td></tr>
                                     <tr><td style="border:none; padding:4px;">Overtime Pay (${jamLbr} hours)</td><td style="border:none; padding:4px; text-align:right;">Rp ${formatRp(totLbr)}</td></tr>
-                                </table>
-                                <br>
+                                </table><br>
                                 <div style="border-top:2px solid #cbd5e1; padding-top:8px; font-weight:900; display:flex; justify-content:space-between; margin-top:10px;">
                                     <span>GROSS EARNINGS</span><span>Rp ${formatRp(totPendapatan)}</span>
                                 </div>
@@ -414,20 +376,14 @@
                                 <table style="border:none; width:100%;">
                                     <tr><td style="border:none; padding:4px;">BPJS / Insurance</td><td style="border:none; padding:4px; text-align:right;">Rp ${formatRp(bpjs)}</td></tr>
                                     <tr><td style="border:none; padding:4px;">Cash Advance / Loan</td><td style="border:none; padding:4px; text-align:right;">Rp ${formatRp(kasbon)}</td></tr>
-                                </table>
-                                <br><br><br>
+                                </table><br><br><br>
                                 <div style="border-top:2px solid #cbd5e1; padding-top:8px; font-weight:900; display:flex; justify-content:space-between; margin-top:10px;">
                                     <span>TOTAL DEDUCTIONS</span><span>Rp ${formatRp(totPotongan)}</span>
                                 </div>
                             </td>
                         </tr>
                     </table>
-                    
-                    <div class="slip-total">
-                        <span>NET TAKE HOME PAY</span>
-                        <span>Rp ${formatRp(thp)}</span>
-                    </div>
-                    
+                    <div class="slip-total"><span>NET TAKE HOME PAY</span><span>Rp ${formatRp(thp)}</span></div>
                     <div class="ttd-area">
                         <div class="ttd-box"><p>Acknowledged by,</p><br><br><br><p style="font-weight:bold; text-decoration:underline;">${k.nm}</p><p style="font-size:10px;">Employee</p></div>
                         <div class="ttd-box"><p>Authorized by,</p><br><br><br><p style="font-weight:bold; text-decoration:underline;">HR & Finance Dept</p><p style="font-size:10px;">${PT}</p></div>
@@ -443,94 +399,124 @@
             let bln = document.getElementById('p-bln').value;
             let html = `<tr style="background:#f1f5f9; text-align:center; font-size:10px;"><th>EMPLOYEE</th><th>ATTN</th><th>GROSS PAY</th><th>DEDUCT</th><th>NET PAY</th></tr>`;
             let grandTHP = 0;
-            
             db_k.forEach(k => {
                 let abs = db_a.filter(x => x.id === k.id && x.tgl.startsWith(bln));
-                let h = abs.filter(x => x.st === "HADIR").length;
-                let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0);
-                
-                let pndp = (h * k.gp) + (h * k.um) + (h * k.ut) + (jamLbr * k.ul);
-                let pot = k.bpjs || 0;
-                let thp = pndp - pot;
+                let h = abs.filter(x => x.st === "HADIR").length; let jamLbr = abs.reduce((sum, x) => sum + x.lb, 0);
+                let pndp = (h * k.gp) + (h * k.um) + (h * k.ut) + (jamLbr * k.ul); let pot = k.bpjs || 0; let thp = pndp - pot;
                 grandTHP += thp;
-                
-                if(h > 0 || pot > 0) {
-                    html += `<tr><td style="text-align:left;"><b>${k.nm}</b><br><span style="font-size:9px; color:#64748b;">${k.jb}</span></td><td style="text-align:center;">${h}d</td><td>Rp ${formatRp(pndp)}</td><td>Rp ${formatRp(pot)}</td><td style="color:var(--success);"><b>Rp ${formatRp(thp)}</b></td></tr>`;
-                }
+                if(h > 0 || pot > 0) { html += `<tr><td style="text-align:left;"><b>${k.nm}</b><br><span style="font-size:9px; color:#64748b;">${k.jb}</span></td><td style="text-align:center;">${h}d</td><td>Rp ${formatRp(pndp)}</td><td>Rp ${formatRp(pot)}</td><td style="color:var(--success);"><b>Rp ${formatRp(thp)}</b></td></tr>`; }
             });
             html += `<tr style="background:#e2e8f0;"><td colspan="4" style="text-align:right; font-weight:900; padding:15px 10px;">GRAND TOTAL COMPANY PAYROLL:</td><td style="font-weight:900; color:var(--primary); font-size:14px; padding:15px 10px;">Rp ${formatRp(grandTHP)}</td></tr>`;
             document.getElementById('tabel-rekap').innerHTML = html;
         }
 
-        // CHART ENGINE
+        // CHART ENGINE (Polar Area untuk Behavior)
         function renderChart(bln) {
             let absBlnIni = db_a.filter(x => x.tgl.startsWith(bln));
-            let counts = { h:0, s:0, i:0, a:0 };
+            let counts = { h:0, s:0, i:0, a:0, l:0 }; // l = lembur
             absBlnIni.forEach(x => {
                 if(x.st==='HADIR') counts.h++;
                 else if(x.st==='SAKIT') counts.s++;
                 else if(x.st==='IZIN') counts.i++;
                 else if(x.st==='ALPA') counts.a++;
+                if(x.lb > 0) counts.l++;
             });
 
             const ctx = document.getElementById('hrChart').getContext('2d');
             if (chartInstance) chartInstance.destroy();
-            
             chartInstance = new Chart(ctx, {
-                type: 'doughnut',
+                type: 'polarArea',
                 data: {
-                    labels: ['Hadir', 'Sakit', 'Izin', 'Alpa'],
+                    labels: ['Kehadiran', 'Kesehatan (Sakit)', 'Izin Absen', 'Pelanggaran (Alpa)', 'Overtime'],
                     datasets: [{
-                        data: [counts.h, counts.s, counts.i, counts.a],
-                        backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#ef4444'],
-                        borderWidth: 0,
-                        hoverOffset: 4
+                        data: [counts.h, counts.s, counts.i, counts.a, counts.l],
+                        backgroundColor: ['rgba(16, 185, 129, 0.6)', 'rgba(245, 158, 11, 0.6)', 'rgba(59, 130, 246, 0.6)', 'rgba(239, 68, 68, 0.6)', 'rgba(147, 51, 234, 0.6)'],
+                        borderWidth: 1
                     }]
                 },
-                options: { responsive: true, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: {size: 10} } } }, cutout: '70%' }
+                options: { responsive: true, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: {size: 9} } } } }
             });
         }
 
-        // RENDER ENGINE
-        function render() {
-            document.getElementById('v-pt').innerText = PT.toUpperCase();
-            document.getElementById('s-pt').value = PT;
-            document.getElementById('v-tgl').innerText = t_now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            
-            let totPegawai = db_k.length;
-            document.getElementById('t-k').innerText = totPegawai;
-            
-            let hadirHariIni = db_a.filter(x => x.tgl === hariIni && x.st === "HADIR").length;
-            document.getElementById('t-h').innerText = hadirHariIni;
+        // PEOPLE ANALYTICS ENGINE
+        function calculateBradfordFactor(empId, blnIni) {
+            // Bradford Factor Formula: B = S^2 * D
+            // S = Spells (Frekuensi absen - SAKIT/IZIN/ALPA)
+            // D = Total Days (Total hari absen)
+            // Note: Simplifikasi, kita asumsikan setiap record absen = 1 spell.
+            let absensi = db_a.filter(x => x.id === empId && x.tgl.startsWith(blnIni) && (x.st === 'SAKIT' || x.st === 'IZIN' || x.st === 'ALPA'));
+            let spells = absensi.length; // S
+            let days = absensi.length; // D (Karena catat harian)
+            return (spells * spells) * days;
+        }
 
-            // HR ANALYTICS
+        function calculateOvertime(empId, blnIni) {
+            let absensi = db_a.filter(x => x.id === empId && x.tgl.startsWith(blnIni));
+            return absensi.reduce((sum, x) => sum + x.lb, 0);
+        }
+
+        function render() {
+            document.getElementById('v-pt').innerText = PT.toUpperCase(); document.getElementById('s-pt').value = PT;
+            document.getElementById('v-tgl').innerText = t_now.toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+            
+            let totPegawai = db_k.length; document.getElementById('t-k').innerText = totPegawai;
+            let hadirHariIni = db_a.filter(x => x.tgl === hariIni && x.st === "HADIR").length; document.getElementById('t-h').innerText = hadirHariIni;
+
             let pct = totPegawai > 0 ? Math.round((hadirHariIni / totPegawai) * 100) : 0;
             document.getElementById('t-pct').innerText = `${pct}%`;
             document.getElementById('t-pct').style.color = pct >= 80 ? 'var(--success)' : (pct >= 50 ? 'var(--warn)' : 'var(--danger)');
 
-            let estPay = 0;
-            db_k.forEach(k => { estPay += (k.gp * 22) + (k.um * 22) + (k.ut * 22); }); // Asumsi 22 hari kerja standar
+            let estPay = 0; db_k.forEach(k => { estPay += (k.gp * 22) + (k.um * 22) + (k.ut * 22); }); 
             document.getElementById('t-pay').innerText = `Rp ${formatRp(estPay)}`;
 
-            renderChart(hariIni.slice(0,7));
+            let blnIni = hariIni.slice(0,7);
+            renderChart(blnIni);
 
+            // RISK MATRIX RENDER
+            let riskHtml = "<table><tr><th>Pegawai</th><th>Bradford Factor</th><th>Burnout Risk (OT)</th></tr>";
+            let hasRisk = false;
+            db_k.forEach(k => {
+                let bf = calculateBradfordFactor(k.id, blnIni);
+                let ot = calculateOvertime(k.id, blnIni);
+                
+                // Tampilkan jika ada risiko (BF > 5 atau OT > 20 jam/bulan)
+                if(bf > 5 || ot > 20) {
+                    hasRisk = true;
+                    let bfClass = bf > 50 ? 'bf-high' : (bf > 15 ? 'bf-med' : 'bf-low');
+                    let otClass = ot > 40 ? 'bf-high' : (ot > 20 ? 'bf-med' : 'bf-low');
+                    let warningBf = bf > 50 ? "<br><span style='font-size:9px; color:#ef4444;'>Disruptif!</span>" : "";
+                    let warningOt = ot > 40 ? "<br><span style='font-size:9px; color:#ef4444;'>High Attrition!</span>" : "";
+                    
+                    riskHtml += `<tr>
+                        <td><b>${k.nm}</b><br><span style="font-size:9px; color:#64748b;">${k.jb}</span></td>
+                        <td align="center"><span class="${bfClass}">${bf} Pts</span>${warningBf}</td>
+                        <td align="center"><span class="${otClass}">${ot} Jam</span>${warningOt}</td>
+                    </tr>`;
+                }
+            });
+            if(!hasRisk) riskHtml += "<tr><td colspan='3' align='center' style='color:var(--success); font-weight:bold;'>✅ Indeks Perilaku Organisasi Sehat</td></tr>";
+            document.getElementById('view-risk').innerHTML = riskHtml + "</table>";
+
+            // LIST PEGAWAI
             let pencarian = document.getElementById('cari-kar') ? document.getElementById('cari-kar').value.toLowerCase() : "";
-            let filterK = db_k.filter(x => x.nm.toLowerCase().includes(pencarian) || x.id.toLowerCase().includes(pencarian) || x.jb.toLowerCase().includes(pencarian));
-
+            let filterK = db_k.filter(x => x.nm.toLowerCase().includes(pencarian) || x.id.toLowerCase().includes(pencarian) || x.jb.toLowerCase().includes(pencarian)); 
             let lk = "<table>"; let opt = "<option value=''>-- Pilih Pegawai --</option>";
             filterK.forEach(x => {
                 lk += `<tr><td><b style="font-size:13px; color:var(--primary);">${x.nm}</b><br><span style="color:#64748b; font-size:10px; font-weight:bold;">ID: ${x.id} | ${x.jb.toUpperCase()}</span></td><td align="right" style="white-space:nowrap;"><button class="btn-sm btn-main" onclick="editK('${x.id}')">⚙️</button> <button class="btn-sm btn-danger" onclick="delK('${x.id}')">🗑️</button></td></tr>`;
             });
             db_k.forEach(x => { opt += `<option value="${x.id}">${x.id} - ${x.nm}</option>`; });
-            
             document.getElementById('list-k').innerHTML = lk + "</table>";
-            document.getElementById('a-sel').innerHTML = opt; document.getElementById('p-sel').innerHTML = opt;
+            document.getElementById('a-sel').innerHTML = opt; document.getElementById('p-sel').innerHTML = opt; 
 
-            let la = "<table><tr><th>TGL</th><th>PEGAWAI</th><th>STATUS</th><th>OPSI</th></tr>";
+            // LIST ABSENSI TERAKHIR
+            let la = "<table><tr><th>TGL</th><th>PEGAWAI</th><th>STATUS / OPSI</th></tr>";
             db_a.slice(-20).reverse().forEach(x => {
-                let k = db_k.find(y => y.id === x.id);
-                let warna = x.st==='HADIR'?'bg-green':(x.st==='ALPA'?'bg-red':'bg-yellow');
-                la += `<tr><td style="font-weight:bold;">${x.tgl.slice(8)}/${x.tgl.slice(5,7)}</td><td><b style="color:var(--primary);">${k?k.nm:'Deleted'}</b><br><small style="color:var(--warn); font-weight:bold;">${x.lb>0?'+ OT '+x.lb+' hrs':''}</small></td><td><span class="badge ${warna}">${x.st}</span></td><td><button class="btn-sm btn-danger" onclick="delA('${x.tgl}','${x.id}')">❌</button></td></tr>`;
+                let k = db_k.find(y => y.id === x.id); let warna = x.st==='HADIR'?'bg-green':(x.st==='ALPA'?'bg-red':'bg-yellow');
+                la += `<tr>
+                    <td style="font-weight:bold;">${x.tgl.slice(8)}/${x.tgl.slice(5,7)}</td>
+                    <td><b style="color:var(--primary);">${k?k.nm:'Deleted'}</b><br><small style="color:var(--warn); font-weight:bold;">${x.lb>0?'+ OT '+x.lb+' hrs':''}</small></td>
+                    <td><span class="badge ${warna}">${x.st}</span> <button class="btn-sm btn-danger" style="padding:4px 6px; margin-left:4px;" onclick="delA('${x.tgl}','${x.id}')">❌</button></td>
+                </tr>`;
             });
             document.getElementById('list-a').innerHTML = la + "</table>";
         }
